@@ -13,7 +13,7 @@ class ViewController: UIViewController {
         let when = DispatchTime.now() + delay
         DispatchQueue.main.asyncAfter(deadline: when, execute: closure)
     }
-    
+        
     @IBOutlet weak var bgView: UIView!
     
     override func viewDidLoad() {
@@ -37,30 +37,34 @@ class ViewController: UIViewController {
         ballInner.frame = CGRect(x: 0, y: 0, width: ballInnerSize, height: ballInnerSize)
         
         ballOuter.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballOuterSize / 4)
-        ballInner.center = CGPoint(x: ballOuter.bounds.midX, y: ballOuter.bounds.minY + ballInnerSize / 2 - 15)
+        ballInner.center = CGPoint(x: ballOuter.bounds.midX, y: ballOuter.bounds.maxY - ballInnerSize - 140)
         
         ballOuter.layer.cornerRadius = ballOuterSize / 2
         ballInner.layer.cornerRadius = ballInnerSize / 2
 
         ballOuter.layer.masksToBounds = true
         
-        ballInner.transform = CGAffineTransform(scaleX: 1, y: 0.85)
+        no8.frame = CGRect(x: 0, y: 0, width: ballInnerSize, height: ballInnerSize + 30)
         
-        no8.frame = CGRect(x: 0, y: 0, width: 500, height: 500)
         no8.font = UIFont(name: "DINCondensed-Bold", size: 300.0)
         no8.text = "8"
         no8.textAlignment = .left
         no8.textColor = UIColor.black
         no8.center = ballInner.center
-        no8.center.x += 80
-        no8.center.y += 20
+        no8.center.x -= ballInnerSize / 12 + 8
+        no8.center.y += 90
         
-        no8.transform = CGAffineTransform(scaleX: 1, y: 0.85)
+        var transform = CATransform3DIdentity
+        transform.m34 = -1 / 300
         
+        transform = CATransform3DRotate(transform, CGFloat(45 * Double.pi / 180), 1, 0, 0)
+        
+        ballInner.layer.transform = transform
         
         bgView.addSubview(ballOuter)
         ballOuter.addSubview(ballInner)
         ballInner.addSubview(no8)
+        
         
         /*
         let fontFamilyNames = UIFont.familyNames
@@ -70,8 +74,7 @@ class ViewController: UIViewController {
         let names = UIFont.fontNames(forFamilyName: familyName)
         print("Font Names = [\(names)]")
         }
-         */
-        
+        */
         
     }
 }
