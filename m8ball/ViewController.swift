@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     
     let ball = UIView()
     let ballNumberCircle = UIView()
-    let ballNumber = UILabel()
+    let ballNumber = UIImageView()
     
     // MARK: - Colors.
     
@@ -31,7 +31,6 @@ class ViewController: UIViewController {
     
     let ballSize: CGFloat = 500
     let ballNumberCircleSize: CGFloat = 275
-    let ballNumberFontSize: CGFloat = 300
     
     // MARK: - Animation timing.
     
@@ -62,7 +61,6 @@ class ViewController: UIViewController {
         bgView.backgroundColor = viewBgColor
         ball.backgroundColor = ballColor
         ballNumberCircle.backgroundColor = ballNumberCircleColor
-        ballNumber.textColor = ballNumberColor
         
         ball.frame = CGRect(x: 0, y: 0, width: ballSize, height: ballSize)
         ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
@@ -75,20 +73,18 @@ class ViewController: UIViewController {
 
         ball.layer.masksToBounds = true
         
-        ballNumber.frame = CGRect(x: 0, y: 0, width: ballNumberFontSize / 2.70, height: ballNumberFontSize)
-        ballNumber.backgroundColor = UIColor.systemBlue
+        //ballNumber.backgroundColor = UIColor.systemBlue
         
-        ballNumber.font = UIFont(name: "DINCondensed-Bold", size: ballNumberFontSize)
-        ballNumber.text = "8"
-        //ballNumber.setAnchorPoint(no8.center)
+        ballNumber.image = UIImage(named: "8")
+        ballNumber.sizeToFit()
+
+        //UIView.animate(withDuration: 3) {
+        //    self.ballNumberCircle.transform = CGAffineTransform(rotationAngle: .pi)
+        //}
         
-        ballNumber.textAlignment = .center
-        ballNumber.center.x = ballNumberCircle.center.x
-        ballNumber.center.y = ballNumberCircle.center.y
-        //ballInnerSize //- no8.frame.width / 2
+        ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
         
         transform.m34 = -1 / 300
-        
         transform = CATransform3DRotate(transform, CGFloat(0 * Double.pi / 180), 1, 0, 0)
         
         ballNumberCircle.layer.transform = transform
@@ -98,6 +94,7 @@ class ViewController: UIViewController {
         ballNumberCircle.addSubview(ballNumber)
     }
     
+    /*
     func initialViewSetup_old() {
         
         bgView.backgroundColor = viewBgColor
@@ -135,6 +132,7 @@ class ViewController: UIViewController {
         ball.addSubview(ballNumberCircle)
         ballNumberCircle.addSubview(ballNumber)
     }
+    */
     
     func initialAnimations() {
         UIView.animate(withDuration: animationDuration,
