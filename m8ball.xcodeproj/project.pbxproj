@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA837E1A26889EFA00659CFF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA837E1926889EFA00659CFF /* Extensions.swift */; };
 		CADF17F32682375400A6FF8C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADF17F22682375400A6FF8C /* AppDelegate.swift */; };
 		CADF17F52682375400A6FF8C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADF17F42682375400A6FF8C /* SceneDelegate.swift */; };
 		CADF17F72682375400A6FF8C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADF17F62682375400A6FF8C /* ViewController.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CA837E1926889EFA00659CFF /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		CADF17EF2682375400A6FF8C /* m8ball.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = m8ball.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CADF17F22682375400A6FF8C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CADF17F42682375400A6FF8C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 				CADF17F22682375400A6FF8C /* AppDelegate.swift */,
 				CADF17F42682375400A6FF8C /* SceneDelegate.swift */,
 				CADF17F62682375400A6FF8C /* ViewController.swift */,
+				CA837E1926889EFA00659CFF /* Extensions.swift */,
 				CADF17F82682375400A6FF8C /* Main.storyboard */,
 				CADF17FB2682375800A6FF8C /* Assets.xcassets */,
 				CADF17FD2682375800A6FF8C /* LaunchScreen.storyboard */,
@@ -140,6 +143,7 @@
 				CADF17F72682375400A6FF8C /* ViewController.swift in Sources */,
 				CADF17F32682375400A6FF8C /* AppDelegate.swift in Sources */,
 				CADF17F52682375400A6FF8C /* SceneDelegate.swift in Sources */,
+				CA837E1A26889EFA00659CFF /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

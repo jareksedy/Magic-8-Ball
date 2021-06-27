@@ -16,9 +16,9 @@ class ViewController: UIViewController {
     
     // MARK: - Views.
     
-    let ballOuter = UIView()
-    let ballInner = UIView()
-    let no8 = UILabel()
+    let ball = UIView()
+    let ballNumberCircle = UIView()
+    let ballNumber = UILabel()
     
     // MARK: - Colors.
     
@@ -29,12 +29,21 @@ class ViewController: UIViewController {
     
     // MARK: - Sizes.
     
-    let ballOuterSize: CGFloat = 500
-    let ballInnerSize: CGFloat = 275
+    let ballSize: CGFloat = 500
+    let ballNumberCircleSize: CGFloat = 275
+    let ballNumberFontSize: CGFloat = 300
+    
+    // MARK: - Animation timing.
+    
+    let animationDuration: TimeInterval = 2.5
     
     // MARK: - Outlets.
             
     @IBOutlet weak var bgView: UIView!
+    
+    // MARK: - Transforms.
+    
+    var transform = CATransform3DIdentity
     
     // MARK: - Code.
     
@@ -45,45 +54,98 @@ class ViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         initialViewSetup()
+        //initialAnimations()
     }
     
     func initialViewSetup() {
         
         bgView.backgroundColor = viewBgColor
-        ballOuter.backgroundColor = ballColor
-        ballInner.backgroundColor = ballNumberCircleColor
-        no8.textColor = ballNumberColor
+        ball.backgroundColor = ballColor
+        ballNumberCircle.backgroundColor = ballNumberCircleColor
+        ballNumber.textColor = ballNumberColor
         
-        ballOuter.frame = CGRect(x: 0, y: 0, width: ballOuterSize, height: ballOuterSize)
-        ballInner.frame = CGRect(x: 0, y: 0, width: ballInnerSize, height: ballInnerSize)
+        ball.frame = CGRect(x: 0, y: 0, width: ballSize, height: ballSize)
+        ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
         
-        ballOuter.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballOuterSize / 4)
-        ballInner.center = CGPoint(x: ballOuter.bounds.midX, y: ballOuter.bounds.maxY - ballInnerSize - 140)
+        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.midY)
+        ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.midY)
         
-        ballOuter.layer.cornerRadius = ballOuterSize / 2
-        ballInner.layer.cornerRadius = ballInnerSize / 2
+        ball.layer.cornerRadius = ballSize / 2
+        ballNumberCircle.layer.cornerRadius = ballNumberCircleSize / 2
 
-        ballOuter.layer.masksToBounds = true
+        ball.layer.masksToBounds = true
         
-        no8.frame = CGRect(x: 0, y: 0, width: ballInnerSize, height: ballInnerSize + 30)
+        ballNumber.frame = CGRect(x: 0, y: 0, width: ballNumberFontSize / 2.70, height: ballNumberFontSize)
+        ballNumber.backgroundColor = UIColor.systemBlue
         
-        no8.font = UIFont(name: "DINCondensed-Bold", size: 300.0)
-        no8.text = "8"
-        no8.textAlignment = .left
-        no8.center = ballInner.center
-        no8.center.x -= ballInnerSize / 12 + 8
-        no8.center.y += 90
+        ballNumber.font = UIFont(name: "DINCondensed-Bold", size: ballNumberFontSize)
+        ballNumber.text = "8"
+        //ballNumber.setAnchorPoint(no8.center)
         
-        var transform = CATransform3DIdentity
+        ballNumber.textAlignment = .center
+        ballNumber.center.x = ballNumberCircle.center.x
+        ballNumber.center.y = ballNumberCircle.center.y
+        //ballInnerSize //- no8.frame.width / 2
+        
+        transform.m34 = -1 / 300
+        
+        transform = CATransform3DRotate(transform, CGFloat(0 * Double.pi / 180), 1, 0, 0)
+        
+        ballNumberCircle.layer.transform = transform
+        
+        bgView.addSubview(ball)
+        ball.addSubview(ballNumberCircle)
+        ballNumberCircle.addSubview(ballNumber)
+    }
+    
+    func initialViewSetup_old() {
+        
+        bgView.backgroundColor = viewBgColor
+        ball.backgroundColor = ballColor
+        ballNumberCircle.backgroundColor = ballNumberCircleColor
+        ballNumber.textColor = ballNumberColor
+        
+        ball.frame = CGRect(x: 0, y: 0, width: ballSize, height: ballSize)
+        ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
+        
+        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballSize / 4)
+        ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.maxY - ballNumberCircleSize - 140)
+        
+        ball.layer.cornerRadius = ballSize / 2
+        ballNumberCircle.layer.cornerRadius = ballNumberCircleSize / 2
+
+        ball.layer.masksToBounds = true
+        
+        ballNumber.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize + 30)
+        
+        ballNumber.font = UIFont(name: "DINCondensed-Bold", size: 300.0)
+        ballNumber.text = "8"
+        ballNumber.textAlignment = .left
+        ballNumber.center = ballNumberCircle.center
+        ballNumber.center.x -= ballNumberCircleSize / 12 + 8
+        ballNumber.center.y += 90
+        
         transform.m34 = -1 / 300
         
         transform = CATransform3DRotate(transform, CGFloat(45 * Double.pi / 180), 1, 0, 0)
         
-        ballInner.layer.transform = transform
+        ballNumberCircle.layer.transform = transform
         
-        bgView.addSubview(ballOuter)
-        ballOuter.addSubview(ballInner)
-        ballInner.addSubview(no8)
+        bgView.addSubview(ball)
+        ball.addSubview(ballNumberCircle)
+        ballNumberCircle.addSubview(ballNumber)
+    }
+    
+    func initialAnimations() {
+        UIView.animate(withDuration: animationDuration,
+                       delay: 0,
+                       options: [],
+                       animations: {
+                        self.ballNumberCircle.center.y -= 100
+                        self.transform = CATransform3DRotate(self.transform, CGFloat(45 * Double.pi / 180), 1, 0, 0)
+                        self.ballNumberCircle.layer.transform = self.transform
+                       },
+                       completion: nil)
     }
 }
 
