@@ -8,12 +8,7 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
-    func delay(_ delay:Double, closure:@escaping ()->()) {
-        let when = DispatchTime.now() + delay
-        DispatchQueue.main.asyncAfter(deadline: when, execute: closure)
-    }
-    
+
     // MARK: - Views.
     
     let ball = UIView()
@@ -29,12 +24,18 @@ class ViewController: UIViewController {
     
     // MARK: - Sizes.
     
-    let ballSize: CGFloat = 500
-    let ballNumberCircleSize: CGFloat = 275
+    let ballSize: CGFloat = 500.0
+    let ballNumberCircleSize: CGFloat = 275.0
+    
+    // MARK: - Angles, boundaries & stuff.
+    
+    let ballTopBottomBoundary: CGFloat = 90.0
+    let rotationAngle: Double = 0.0
+    let pValue: CGFloat = 400.0
     
     // MARK: - Animation timing.
     
-    let animationDuration: TimeInterval = 2.5
+    let animationDuration: TimeInterval = 1.5
     
     // MARK: - Outlets.
             
@@ -53,7 +54,7 @@ class ViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         initialViewSetup()
-        //initialAnimations()
+        createPanGestureRecognizer(targetView: bgView)
     }
     
     func initialViewSetup() {
@@ -77,73 +78,79 @@ class ViewController: UIViewController {
         
         ballNumber.image = UIImage(named: "8")
         ballNumber.sizeToFit()
-
-        //UIView.animate(withDuration: 3) {
-        //    self.ballNumberCircle.transform = CGAffineTransform(rotationAngle: .pi)
-        //}
         
         ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
         
-        transform.m34 = -1 / 300
-        transform = CATransform3DRotate(transform, CGFloat(0 * Double.pi / 180), 1, 0, 0)
+        transform.m34 = -1 / pValue
+        
+//      transform = CATransform3DRotate(transform, CGFloat(-rotationAngle * .pi / 180), 1, 0, 0)
+//      ballNumberCircle.center.y = ball.bounds.maxY - ballTopBottomBoundary
+        
+        transform = CATransform3DRotate(transform, CGFloat(rotationAngle * .pi / 180), 1, 0, 0)
+        //ballNumberCircle.center.y = ball.bounds.minY + ballTopBottomBoundary
         
         ballNumberCircle.layer.transform = transform
         
         bgView.addSubview(ball)
         ball.addSubview(ballNumberCircle)
         ballNumberCircle.addSubview(ballNumber)
+        
+//        UIView.animate(withDuration: animationDuration) {
+//            self.ballNumberCircle.center.y = self.ball.bounds.maxY - self.ballTopBottomBoundary
+//            self.transform = CATransform3DRotate(self.transform, CGFloat(-self.rotationAngle * 2 * .pi / 180), 1, 0, 0)
+//            self.ballNumberCircle.layer.transform = self.transform
+//        }
     }
-    
-    /*
-    func initialViewSetup_old() {
-        
-        bgView.backgroundColor = viewBgColor
-        ball.backgroundColor = ballColor
-        ballNumberCircle.backgroundColor = ballNumberCircleColor
-        ballNumber.textColor = ballNumberColor
-        
-        ball.frame = CGRect(x: 0, y: 0, width: ballSize, height: ballSize)
-        ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
-        
-        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballSize / 4)
-        ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.maxY - ballNumberCircleSize - 140)
-        
-        ball.layer.cornerRadius = ballSize / 2
-        ballNumberCircle.layer.cornerRadius = ballNumberCircleSize / 2
-
-        ball.layer.masksToBounds = true
-        
-        ballNumber.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize + 30)
-        
-        ballNumber.font = UIFont(name: "DINCondensed-Bold", size: 300.0)
-        ballNumber.text = "8"
-        ballNumber.textAlignment = .left
-        ballNumber.center = ballNumberCircle.center
-        ballNumber.center.x -= ballNumberCircleSize / 12 + 8
-        ballNumber.center.y += 90
-        
-        transform.m34 = -1 / 300
-        
-        transform = CATransform3DRotate(transform, CGFloat(45 * Double.pi / 180), 1, 0, 0)
-        
-        ballNumberCircle.layer.transform = transform
-        
-        bgView.addSubview(ball)
-        ball.addSubview(ballNumberCircle)
-        ballNumberCircle.addSubview(ballNumber)
-    }
-    */
     
     func initialAnimations() {
-        UIView.animate(withDuration: animationDuration,
-                       delay: 0,
-                       options: [],
-                       animations: {
-                        self.ballNumberCircle.center.y -= 100
-                        self.transform = CATransform3DRotate(self.transform, CGFloat(45 * Double.pi / 180), 1, 0, 0)
-                        self.ballNumberCircle.layer.transform = self.transform
-                       },
-                       completion: nil)
+    }
+    
+    func createPanGestureRecognizer(targetView: UIView) {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(recognizer:)))
+        targetView.addGestureRecognizer(panGesture)
+    }
+
+    @objc func handlePan(recognizer: UIPanGestureRecognizer) {
+
+        let translation = recognizer.translation(in: view)
+        var panRotationAngle: Double = 0.0
+        
+        recognizer.setTranslation(.zero, in: view)
+        
+        ballNumberCircle.center.y += translation.y
+        panRotationAngle -= Double((ballNumberCircle.center.y - ballNumberCircleSize + 30) / 3.5)
+        
+        transform = CATransform3DIdentity
+        transform.m34 = -1 / pValue
+        
+        //let panRotationAngle = rotationAngle - Double(ballNumberCircle.center.y - ballNumberCircleSize)
+        //print(ballNumberCircle.center.y)
+        //Double(ballNumberCircle.center.y - ballNumberCircleSize)
+        //panRotationAngle /= 2
+        
+        transform = CATransform3DRotate(transform, CGFloat(panRotationAngle * .pi / 180), 1, 0, 0)
+        ballNumberCircle.layer.transform = transform
+        
+        switch recognizer.state {
+        
+        case .ended:
+            
+            UIView.animate(withDuration: 0.5,
+                           delay: 0,
+                           usingSpringWithDamping: 0.75,
+                           initialSpringVelocity: 0.5,
+                           options: [],
+                           animations: {
+                            self.transform = CATransform3DIdentity
+                            self.transform.m34 = -1 / self.pValue
+                            self.transform = CATransform3DRotate(self.transform, CGFloat(self.rotationAngle * .pi / 180), 1, 0, 0)
+                            self.ballNumberCircle.layer.transform = self.transform
+                            self.ballNumberCircle.center.y = self.ball.bounds.midY //+ ballTopBottomBoundary
+                           },
+                           completion: nil)
+            
+        default: return
+        }
     }
 }
 
