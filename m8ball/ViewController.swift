@@ -13,7 +13,25 @@ class ViewController: UIViewController {
         let when = DispatchTime.now() + delay
         DispatchQueue.main.asyncAfter(deadline: when, execute: closure)
     }
-        
+    
+    // MARK: - Views.
+    
+    let ballOuter = UIView()
+    let ballInner = UIView()
+    let no8 = UILabel()
+    
+    // MARK: - Colors.
+    
+    let viewBgColor = UIColor.systemPink
+    let ballColor = UIColor.systemPink
+    let ballNumberCircleColor = UIColor.yellow
+    let ballNumberColor = UIColor.systemPink
+    
+    // MARK: - Sizes.
+    
+    let ballOuterSize: CGFloat = 500
+    let ballInnerSize: CGFloat = 275
+            
     @IBOutlet weak var bgView: UIView!
     
     override func viewDidLoad() {
@@ -22,16 +40,15 @@ class ViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        initialSetup()
+    }
+    
+    func initialSetup() {
         
-        let ballOuterSize: CGFloat = 500
-        let ballInnerSize: CGFloat = 275
-        
-        let ballOuter = UIView()
-        let ballInner = UIView()
-        let no8 = UILabel()
-        
-        ballOuter.backgroundColor = UIColor.black
-        ballInner.backgroundColor = UIColor.white
+        bgView.backgroundColor = viewBgColor
+        ballOuter.backgroundColor = ballColor
+        ballInner.backgroundColor = ballNumberCircleColor
+        no8.textColor = ballNumberColor
         
         ballOuter.frame = CGRect(x: 0, y: 0, width: ballOuterSize, height: ballOuterSize)
         ballInner.frame = CGRect(x: 0, y: 0, width: ballInnerSize, height: ballInnerSize)
@@ -49,7 +66,6 @@ class ViewController: UIViewController {
         no8.font = UIFont(name: "DINCondensed-Bold", size: 300.0)
         no8.text = "8"
         no8.textAlignment = .left
-        no8.textColor = UIColor.black
         no8.center = ballInner.center
         no8.center.x -= ballInnerSize / 12 + 8
         no8.center.y += 90
@@ -64,18 +80,16 @@ class ViewController: UIViewController {
         bgView.addSubview(ballOuter)
         ballOuter.addSubview(ballInner)
         ballInner.addSubview(no8)
-        
-        
-        /*
-        let fontFamilyNames = UIFont.familyNames
-        for familyName in fontFamilyNames {
-        print("------------------------------")
-        print("Font Family Name = [\(familyName)]")
-        let names = UIFont.fontNames(forFamilyName: familyName)
-        print("Font Names = [\(names)]")
-        }
-        */
-        
     }
 }
 
+
+/*
+let fontFamilyNames = UIFont.familyNames
+for familyName in fontFamilyNames {
+print("------------------------------")
+print("Font Family Name = [\(familyName)]")
+let names = UIFont.fontNames(forFamilyName: familyName)
+print("Font Names = [\(names)]")
+}
+*/
