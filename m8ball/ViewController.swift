@@ -42,10 +42,10 @@ class ViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        initialSetup()
+        initialViewSetup()
     }
     
-    func initialSetup() {
+    func initialViewSetup() {
         
         bgView.backgroundColor = viewBgColor
         ballOuter.backgroundColor = ballColor
