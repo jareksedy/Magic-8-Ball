@@ -23,9 +23,9 @@ class ViewController: UIViewController {
     // MARK: - Colors.
     
     let viewBgColor = UIColor.systemPink
-    let ballColor = UIColor.systemPink
-    let ballNumberCircleColor = UIColor.yellow
-    let ballNumberColor = UIColor.systemPink
+    let ballColor = UIColor.black
+    let ballNumberCircleColor = UIColor.white
+    let ballNumberColor = UIColor.black
     
     // MARK: - Sizes.
     
@@ -35,6 +35,8 @@ class ViewController: UIViewController {
     // MARK: - Outlets.
             
     @IBOutlet weak var bgView: UIView!
+    
+    // MARK: - Code.
     
     override func viewDidLoad() {
         super.viewDidLoad()
