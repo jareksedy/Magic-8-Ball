@@ -31,6 +31,8 @@ class ViewController: UIViewController {
     
     let ballOuterSize: CGFloat = 500
     let ballInnerSize: CGFloat = 275
+    
+    // MARK: - Outlets.
             
     @IBOutlet weak var bgView: UIView!
     
