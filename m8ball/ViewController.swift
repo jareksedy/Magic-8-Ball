@@ -37,15 +37,15 @@ class ViewController: UIViewController {
     
     // MARK: - Angles, boundaries & stuff.
     
-    let ballTopBottomBoundary: CGFloat = 90.0
+    let ballTopBottomBoundary: CGFloat = 85.0
     let rotationAngle: Double = -45.0
     let pValue: CGFloat = 400.0
     
     // MARK: - Animation options.
     
     let animationDuration: TimeInterval = 0.5
-    let initialDelay: TimeInterval = 0.5
-    let springDamping: CGFloat = 0.5
+    let initialDelay: TimeInterval = 0.05
+    let springDamping: CGFloat = 0.65
     let springVelocity: CGFloat = 0.25
     
     // MARK: - Transforms.
