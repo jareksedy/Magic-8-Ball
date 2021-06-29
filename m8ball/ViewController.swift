@@ -136,17 +136,23 @@ class ViewController: UIViewController {
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
 
         let translation = recognizer.translation(in: view)
-        var panRotationAngle: Double = 0.0
+        var panRotationAngleX: Double = 0.0
+        var panRotationAngleY: Double = 0.0
         
         recognizer.setTranslation(.zero, in: view)
         
         ballNumberCircle.center.y += translation.y
-        panRotationAngle -= Double((ballNumberCircle.center.y - ballNumberCircleSize + 25) / 3.5)
+        ballNumberCircle.center.x += translation.x
+        
+        panRotationAngleX -= Double((ballNumberCircle.center.y - ballNumberCircleSize + 25) / 3.5)
+        panRotationAngleY += Double((ballNumberCircle.center.x - ballNumberCircleSize + 25) / 3.5)
         
         transform = CATransform3DIdentity
         transform.m34 = -1 / pValue
         
-        transform = CATransform3DRotate(transform, CGFloat(panRotationAngle * .pi / 180), 1, 0, 0)
+        transform = CATransform3DRotate(transform, CGFloat(panRotationAngleX * .pi / 180), 1, 0, 0)
+        transform = CATransform3DRotate(transform, CGFloat(panRotationAngleY * .pi / 180), 0, 1, 0)
+        
         ballNumberCircle.layer.transform = transform
         
         // DEBUG INFO
@@ -172,6 +178,7 @@ class ViewController: UIViewController {
                             self.transform = CATransform3DRotate(self.transform, CGFloat(45 * Double.pi / 180), 1, 0, 0)
                             self.ballNumberCircle.layer.transform = self.transform
                             self.ballNumberCircle.center.y = self.ball.bounds.minY + self.ballTopBottomBoundary
+                            self.ballNumberCircle.center.x = self.ball.bounds.midX
                            },
                            completion: nil)
             
