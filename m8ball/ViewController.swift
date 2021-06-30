@@ -45,7 +45,7 @@ class ViewController: UIViewController {
     
     // MARK: - Animation options.
     
-    let animationDuration: TimeInterval = 1.25
+    let animationDuration: TimeInterval = 1.75
     let initialDelay: TimeInterval = 0.5
     let springDamping: CGFloat = 0.30
     let springVelocity: CGFloat = 0.10
@@ -64,6 +64,7 @@ class ViewController: UIViewController {
         super.viewDidLayoutSubviews()
         initialViewSetup()
         createPanGestureRecognizer(targetView: bgView)
+        createTapGestureRecognizer(targetView: ball)
         animateToOrigin(initialDelay)
     }
     
@@ -90,8 +91,8 @@ class ViewController: UIViewController {
         ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
         
         ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.midY)
-        ballNumberCircle.center = CGPoint(x: ball.bounds.midX + CGFloat.random(in: 400.0...500.0) * CGFloat.random(in: -1...1),
-                                          y: ball.bounds.minY + self.ballTopBottomBoundary - CGFloat.random(in: 0...50))
+        ballNumberCircle.center = CGPoint(x: ball.bounds.midX + 200 * CGFloat(Bool.random() ? 1.0 : -1.0),
+                                          y: ball.bounds.minY - 100)
         
         ball.layer.cornerRadius = ballSize / 2
         ballNumberCircle.layer.cornerRadius = ballNumberCircleSize / 2
@@ -139,9 +140,8 @@ class ViewController: UIViewController {
         ballNumberCircle.layer.transform = getTransform(ballNumberCircle)
     }
     
-    func moveTo(x:CGFloat = 0, y:CGFloat = 0) {
-        ballNumberCircle.center.x = x
-        ballNumberCircle.center.y = y
+    func moveTo(point: CGPoint) {
+        ballNumberCircle.center = point
         ballNumberCircle.layer.transform = getTransform(ballNumberCircle)
     }
     
@@ -164,6 +164,25 @@ class ViewController: UIViewController {
     func createPanGestureRecognizer(targetView: UIView) {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(recognizer:)))
         targetView.addGestureRecognizer(panGesture)
+    }
+    
+    func createTapGestureRecognizer(targetView: UIView) {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:)))
+        targetView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func handleTap(recognizer: UITapGestureRecognizer) {
+        UIView.animate(withDuration: animationDuration / 2,
+                       delay: 0,
+                       usingSpringWithDamping: springDamping,
+                       initialSpringVelocity: springVelocity,
+                       options: [.curveEaseInOut],
+                       animations: {
+                        self.moveTo(point: CGPoint(x: CGFloat.random(in: 100...300), y: CGFloat.random(in: 100...300)))
+                       },
+                       completion: {_ in
+                        self.animateToOrigin()
+                       })
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
