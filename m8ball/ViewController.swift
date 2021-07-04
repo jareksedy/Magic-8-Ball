@@ -39,9 +39,6 @@ class ViewController: UIViewController {
     
     let ballTopBottomBoundary: CGFloat = 90.0
     let pValue: CGFloat = 400.0
-//    let rotationAngle: Double = -45.0
-//    var panRotationAngleX: Double = 0.0
-//    var panRotationAngleY: Double = 0.0
     
     // MARK: - Animation options.
     
@@ -64,8 +61,9 @@ class ViewController: UIViewController {
         super.viewDidLayoutSubviews()
         initialViewSetup()
         createPanGestureRecognizer(targetView: bgView)
-        createTapGestureRecognizer(targetView: ball)
-        animateToOrigin(initialDelay)
+        //createTapGestureRecognizer(targetView: ball)
+        //animateToOrigin(initialDelay)
+        initialAnimations()
     }
     
     func initialViewSetup() {
@@ -90,7 +88,7 @@ class ViewController: UIViewController {
         ball.frame = CGRect(x: 0, y: 0, width: ballSize, height: ballSize)
         ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
         
-        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.midY)
+        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.midY /*bgView.bounds.maxY - ballSize / 2 + 100*/)
         ballNumberCircle.center = CGPoint(x: ball.bounds.midX + 200 * CGFloat(Bool.random() ? 1.0 : -1.0),
                                           y: ball.bounds.minY - 100)
         
@@ -106,6 +104,8 @@ class ViewController: UIViewController {
 
         ballNumberCircle.layer.transform = getTransform(ballNumberCircle)
         
+        ball.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        
         bgView.addSubview(ball)
         ball.addSubview(ballNumberCircle)
         ballNumberCircle.addSubview(ballNumber)
@@ -115,7 +115,6 @@ class ViewController: UIViewController {
     // MARK: - 3d operations.
     
     func getTransform(_ ball: UIView) -> CATransform3D {
-        
         var transform: CATransform3D = CATransform3DIdentity
         var panRotationAngleX = 0.0
         var panRotationAngleY = 0.0
@@ -132,7 +131,7 @@ class ViewController: UIViewController {
         return transform
     }
     
-    // MARK: - Animations.
+    // MARK: - Ball move functions.
     
     func moveToTop() {
         ballNumberCircle.center.y = ball.bounds.minY + ballTopBottomBoundary
@@ -145,8 +144,25 @@ class ViewController: UIViewController {
         ballNumberCircle.layer.transform = getTransform(ballNumberCircle)
     }
     
-    func animateToOrigin(_ delay: TimeInterval = 0.0) {
+    // MARK: - Animations.
+    
+    func initialAnimations() {
         UIView.animate(withDuration: animationDuration,
+                       delay: 0.05,
+                       usingSpringWithDamping: springDamping,
+                       initialSpringVelocity: springVelocity,
+                       options: [.curveEaseInOut, .allowUserInteraction],
+                       animations: {
+                        self.ballNumberCircle.center.x = self.ball.bounds.midX
+                        self.ballNumberCircle.center.y = self.ball.bounds.minY + self.ballTopBottomBoundary
+                        self.ballNumberCircle.layer.transform = self.getTransform(self.ballNumberCircle)
+                        self.ball.transform = .identity
+                       },
+                       completion: nil)
+    }
+    
+    func animateToOrigin(_ delay: TimeInterval = 0.0) {
+        UIView.animate(withDuration: animationDuration / 4,
                        delay: delay,
                        usingSpringWithDamping: springDamping,
                        initialSpringVelocity: springVelocity,
@@ -190,12 +206,13 @@ class ViewController: UIViewController {
         let translation = recognizer.translation(in: view)
         
         recognizer.setTranslation(.zero, in: view)
+
+            let pointX = ballNumberCircle.center.x + translation.x
+            let pointY = ballNumberCircle.center.y + translation.y
         
-        ballNumberCircle.center.x += translation.x
-        ballNumberCircle.center.y += translation.y
-        
-        ballNumberCircle.layer.transform = getTransform(ballNumberCircle)
-        
+            moveTo(point: CGPoint(x: pointX, y: pointY))
+            
+
         // DEBUG INFO
         
 //        debugInfoLabel.text = "A(X): \(panRotationAngleX.roundTo(places: 2))° A(Y): \(panRotationAngleY.roundTo(places: 2))° C.X: \(Double(ballNumberCircle.center.x).roundTo(places: 2)) C.Y: \(Double(ballNumberCircle.center.y).roundTo(places: 2))"
@@ -207,7 +224,8 @@ class ViewController: UIViewController {
         switch recognizer.state {
         
         case .ended:
-            animateToOrigin()
+            return
+            //animateToOrigin()
             
         default:
             return
