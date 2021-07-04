@@ -47,7 +47,7 @@ class ViewController: UIViewController {
     let springDamping: CGFloat = 0.30
     let springVelocity: CGFloat = 0.10
     
-    let animationSteps: Int = 8
+    let animationSteps: Int = 90
     var animationPoints = [CGPoint]()
     var animationIndex = 0
     
@@ -158,12 +158,6 @@ class ViewController: UIViewController {
     
     // MARK: - Ball move functions.
     
-    func moveToTop() {
-        ballNumberCircle.center.y = ball.bounds.minY + ballTopBottomBoundary
-        ballNumberCircle.center.x = ball.bounds.midX
-        ballNumberCircle.layer.transform = getTransform(ballNumberCircle)
-    }
-    
     func moveTo(_ point: CGPoint) {
         ballNumberCircle.center = point
         ballNumberCircle.layer.transform = getTransformForPoint(CGPoint(x: ballNumberCircle.center.x, y: ballNumberCircle.center.y))
@@ -180,11 +174,7 @@ class ViewController: UIViewController {
     func drawAnimationPath() {
         let path = UIBezierPath()
         path.move(to: animationPoints[0])
-        
-        animationPoints.forEach { point in
-            path.addLine(to: point)
-        }
-        
+        animationPoints.forEach { point in path.addLine(to: point) }
         path.close()
         
         let layer = CAShapeLayer()
@@ -193,27 +183,34 @@ class ViewController: UIViewController {
         layer.strokeColor = UIColor.yellow.cgColor
         layer.fillColor = UIColor.clear.cgColor
         layer.lineWidth = 2.0
+        
         ball.layer.addSublayer(layer)
     }
     
     // MARK: - Animation functions.
     
     func initialAnimations() {
-//        UIView.animateKeyframes(withDuration: animationDuration,
-//                                delay: 0,
-//                                options: [],
-//                                animations: {
-//
-//                                    for _ in 1...self.animationSteps {
-//
-//                                        UIView.addKeyframe(withRelativeStartTime: <#T##Double#>,
-//                                                           relativeDuration: <#T##Double#>,
-//                                                           animations: <#T##() -> Void#>)
-//
-//                                    }
-//
-//                                },
-//                                completion: nil)
+        var relStartTime: TimeInterval = 0.0
+        let relDuration: TimeInterval = 1 / Double(animationSteps)
+        
+        UIView.animateKeyframes(withDuration: 1.0,
+                                delay: 0,
+                                options: [],
+                                animations: {
+
+                                    for i in 0...self.animationSteps - 1 {
+
+                                        UIView.addKeyframe(withRelativeStartTime: relStartTime,
+                                                           relativeDuration: relDuration,
+                                                           animations: {
+                                                            self.moveTo(self.animationPoints[i])
+                                                           })
+                                        relStartTime += 1 / Double(self.animationSteps)
+
+                                    }
+
+                                },
+                                completion: nil)
     }
     
     func animateToOrigin(_ delay: TimeInterval = 0.0) {
@@ -243,13 +240,13 @@ class ViewController: UIViewController {
     }
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
-        
-        if animationIndex >= animationSteps {
-            animationIndex = 0
-        }
-        
-        moveTo(animationPoints[animationIndex])
-        animationIndex += 1
+        initialAnimations()
+//        if animationIndex >= animationSteps {
+//            animationIndex = 0
+//        }
+//
+//        moveTo(animationPoints[animationIndex])
+//        animationIndex += 1
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
