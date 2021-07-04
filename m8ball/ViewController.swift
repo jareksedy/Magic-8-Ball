@@ -47,6 +47,10 @@ class ViewController: UIViewController {
     let springDamping: CGFloat = 0.30
     let springVelocity: CGFloat = 0.10
     
+    let animationSteps: Int = 8
+    var animationPoints = [CGPoint]()
+    var animationIndex = 0
+    
     // MARK: - Transforms.
     
     var transform = CATransform3DIdentity
@@ -58,11 +62,11 @@ class ViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
+        
         super.viewDidLayoutSubviews()
         initialViewSetup()
         createPanGestureRecognizer(targetView: bgView)
-        //createTapGestureRecognizer(targetView: ball)
-        //animateToOrigin(initialDelay)
+        createTapGestureRecognizer(targetView: ball)
         initialAnimations()
     }
     
@@ -89,8 +93,7 @@ class ViewController: UIViewController {
         ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
         
         ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.midY /*bgView.bounds.maxY - ballSize / 2 + 100*/)
-        ballNumberCircle.center = CGPoint(x: ball.bounds.midX + 200 * CGFloat(Bool.random() ? 1.0 : -1.0),
-                                          y: ball.bounds.minY - 100)
+        ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.minY + ballTopBottomBoundary)
         
         ball.layer.cornerRadius = ballSize / 2
         ballNumberCircle.layer.cornerRadius = ballNumberCircleSize / 2
@@ -104,29 +107,51 @@ class ViewController: UIViewController {
 
         ballNumberCircle.layer.transform = getTransform(ballNumberCircle)
         
-        ball.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        
         bgView.addSubview(ball)
         ball.addSubview(ballNumberCircle)
         ballNumberCircle.addSubview(ballNumber)
+        
+        createAnimationPoints()
+        drawAnimationPath()
+        
+        moveTo(animationPoints[0])
 
     }
     
-    // MARK: - 3d operations.
+    // MARK: - 3d functions.
     
     func getTransform(_ ball: UIView) -> CATransform3D {
-        var transform: CATransform3D = CATransform3DIdentity
-        var panRotationAngleX = 0.0
-        var panRotationAngleY = 0.0
         
-        panRotationAngleX -= Double((ball.center.y - ball.bounds.width + 25) / 3.5)
-        panRotationAngleY += Double((ball.center.x - ball.bounds.height + 25) / 3.5)
+        var transform: CATransform3D = CATransform3DIdentity
+        var rotationAngleX: CGFloat = 0.0
+        var rotationAngleY: CGFloat = 0.0
+        
+        rotationAngleX = (ball.center.y - ball.bounds.width + 25) / 3.5 * -1
+        rotationAngleY = (ball.center.x - ball.bounds.height + 25) / 3.5
         
         transform = CATransform3DIdentity
         transform.m34 = -1 / pValue
         
-        transform = CATransform3DRotate(transform, CGFloat(panRotationAngleX * .pi / 180), 1, 0, 0)
-        transform = CATransform3DRotate(transform, CGFloat(panRotationAngleY * .pi / 180), 0, 1, 0)
+        transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
+        transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
+        
+        return transform
+    }
+    
+    func getTransformForPoint(_ point: CGPoint) -> CATransform3D {
+        
+        var transform: CATransform3D = CATransform3DIdentity
+        var rotationAngleX: CGFloat = 0.0
+        var rotationAngleY: CGFloat = 0.0
+        
+        rotationAngleX = (point.y - ballNumberCircleSize + 25) / 3.5 * -1
+        rotationAngleY = (point.x - ballNumberCircleSize + 25) / 3.5
+        
+        transform = CATransform3DIdentity
+        transform.m34 = -1 / pValue
+        
+        transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
+        transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
         
         return transform
     }
@@ -139,26 +164,56 @@ class ViewController: UIViewController {
         ballNumberCircle.layer.transform = getTransform(ballNumberCircle)
     }
     
-    func moveTo(point: CGPoint) {
+    func moveTo(_ point: CGPoint) {
         ballNumberCircle.center = point
-        ballNumberCircle.layer.transform = getTransform(ballNumberCircle)
+        ballNumberCircle.layer.transform = getTransformForPoint(CGPoint(x: ballNumberCircle.center.x, y: ballNumberCircle.center.y))
     }
     
-    // MARK: - Animations.
+    // MARK: - Temp.
+    
+    func createAnimationPoints() {
+        animationPoints = getCirclePoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
+                                          radius: ballSize / 3.10,
+                                          steps: animationSteps)
+    }
+    
+    func drawAnimationPath() {
+        let path = UIBezierPath()
+        path.move(to: animationPoints[0])
+        
+        animationPoints.forEach { point in
+            path.addLine(to: point)
+        }
+        
+        path.close()
+        
+        let layer = CAShapeLayer()
+        layer.path = path.cgPath
+        
+        layer.strokeColor = UIColor.yellow.cgColor
+        layer.fillColor = UIColor.clear.cgColor
+        layer.lineWidth = 2.0
+        ball.layer.addSublayer(layer)
+    }
+    
+    // MARK: - Animation functions.
     
     func initialAnimations() {
-        UIView.animate(withDuration: animationDuration,
-                       delay: 0.05,
-                       usingSpringWithDamping: springDamping,
-                       initialSpringVelocity: springVelocity,
-                       options: [.curveEaseInOut, .allowUserInteraction],
-                       animations: {
-                        self.ballNumberCircle.center.x = self.ball.bounds.midX
-                        self.ballNumberCircle.center.y = self.ball.bounds.minY + self.ballTopBottomBoundary
-                        self.ballNumberCircle.layer.transform = self.getTransform(self.ballNumberCircle)
-                        self.ball.transform = .identity
-                       },
-                       completion: nil)
+//        UIView.animateKeyframes(withDuration: animationDuration,
+//                                delay: 0,
+//                                options: [],
+//                                animations: {
+//
+//                                    for _ in 1...self.animationSteps {
+//
+//                                        UIView.addKeyframe(withRelativeStartTime: <#T##Double#>,
+//                                                           relativeDuration: <#T##Double#>,
+//                                                           animations: <#T##() -> Void#>)
+//
+//                                    }
+//
+//                                },
+//                                completion: nil)
     }
     
     func animateToOrigin(_ delay: TimeInterval = 0.0) {
@@ -188,17 +243,13 @@ class ViewController: UIViewController {
     }
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
-        UIView.animate(withDuration: animationDuration / 2,
-                       delay: 0,
-                       usingSpringWithDamping: springDamping,
-                       initialSpringVelocity: springVelocity,
-                       options: [.curveEaseInOut],
-                       animations: {
-                        self.moveTo(point: CGPoint(x: CGFloat.random(in: 100...300), y: CGFloat.random(in: 100...300)))
-                       },
-                       completion: {_ in
-                        self.animateToOrigin()
-                       })
+        
+        if animationIndex >= animationSteps {
+            animationIndex = 0
+        }
+        
+        moveTo(animationPoints[animationIndex])
+        animationIndex += 1
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
@@ -210,7 +261,7 @@ class ViewController: UIViewController {
             let pointX = ballNumberCircle.center.x + translation.x
             let pointY = ballNumberCircle.center.y + translation.y
         
-            moveTo(point: CGPoint(x: pointX, y: pointY))
+            moveTo(CGPoint(x: pointX, y: pointY))
             
 
         // DEBUG INFO
