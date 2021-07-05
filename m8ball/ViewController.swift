@@ -108,7 +108,7 @@ class ViewController: UIViewController {
         ballNumberCircle.addSubview(ballNumber)
         
         buildCircleAnimationPoints()
-        //drawAnimationPath(circularAnimationPoints)
+        drawAnimationPath(circularAnimationPoints)
         
         moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
 
@@ -171,37 +171,13 @@ class ViewController: UIViewController {
     
     // MARK: - Animation functions.
     
-    func initialAnimations() {
-        var relStartTime: TimeInterval = 0.0
-        let relDuration: TimeInterval = 1 / Double(circularAnimationSteps)
-        
-        UIView.animateKeyframes(withDuration: 1.0,
-                                delay: 0,
-                                options: [],
-                                animations: {
-
-                                    for i in 0...self.circularAnimationSteps - 1 {
-
-                                        UIView.addKeyframe(withRelativeStartTime: relStartTime,
-                                                           relativeDuration: relDuration,
-                                                           animations: {
-                                                            self.moveTo(self.circularAnimationPoints[i])
-                                                           })
-                                        
-                                        relStartTime += relDuration
-                                    }
-
-                                },
-                                completion: nil)
-    }
-    
     func animateToTop() {
         var relStartTime: TimeInterval = 0.0
         let relDuration: TimeInterval = 1 / Double(circularAnimationSteps)
         
         moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
         
-        UIView.animateKeyframes(withDuration: 1.0, delay: 0, options: [],
+        UIView.animateKeyframes(withDuration: 1.0, delay: 0, options: [.allowUserInteraction],
                                 animations: {
                                     var index = self.circularAnimationPoints.getBottom()
                                     for _ in self.circularAnimationPoints.getBottom()...self.circularAnimationPoints.getTop() - 1 {
@@ -225,7 +201,7 @@ class ViewController: UIViewController {
         
         moveTo(circularAnimationPoints[circularAnimationPoints.getTop()])
         
-        UIView.animateKeyframes(withDuration: 1.0, delay: 0, options: [],
+        UIView.animateKeyframes(withDuration: 1.0, delay: 0, options: [.allowUserInteraction],
                                 animations: {
                                     var index = self.circularAnimationPoints.getTop()
                                     for _ in self.circularAnimationPoints.getBottom()...self.circularAnimationPoints.getTop() - 1 {
