@@ -161,24 +161,24 @@ class ViewController: UIViewController {
     
     // MARK: - Animation points functions.
     
-    func buildCircleAnimationPoints() {
+    func buildCircleAnimationPoints() {        
         circleAnimationPoints = getCircleAnimationPoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
-                                          radius: ballSize / 3.10,
-                                          steps: circleAnimationSteps)
+                                                         radius: ballSize / 3.25,
+                                                         steps: circleAnimationSteps)
     }
     
     func drawCircleAnimationPath() {
         let path = UIBezierPath()
         path.move(to: circleAnimationPoints[0])
         circleAnimationPoints.forEach { point in path.addLine(to: point) }
-        path.close()
+        //path.close()
         
         let layer = CAShapeLayer()
         layer.path = path.cgPath
         
         layer.strokeColor = UIColor.yellow.cgColor
         layer.fillColor = UIColor.clear.cgColor
-        layer.lineWidth = 2.0
+        layer.lineWidth = 3.0
         
         ball.layer.addSublayer(layer)
     }

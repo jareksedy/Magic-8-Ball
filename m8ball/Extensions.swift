@@ -8,13 +8,27 @@
 import UIKit
 
 func getCircleAnimationPoints(centerPoint: CGPoint, radius: CGFloat, steps: Int)->[CGPoint] {
-    let result: [CGPoint] = stride(from: 270.0, to: 630.0, by: Double(360 / steps)).map {
+    let result: [CGPoint] = stride(from: 0.0, to: 360.0, by: Double(360 / steps)).map {
         let bearing = CGFloat($0) * .pi / 180
         let x = centerPoint.x + radius * cos(bearing)
         let y = centerPoint.y + radius * sin(bearing)
         return CGPoint(x: x, y: y)
     }
-    return result
+    return result//.shifted(by: Int(Double(steps) / 3))
+}
+
+extension Array {
+    func shifted(by shiftAmount: Int) -> Array<Element> {
+        guard self.count > 0, (shiftAmount % self.count) != 0 else { return self }
+
+        let moduloShiftAmount = shiftAmount % self.count
+        let negativeShift = shiftAmount < 0
+        let effectiveShiftAmount = negativeShift ? moduloShiftAmount + self.count : moduloShiftAmount
+
+        let shift: (Int) -> Int = { return $0 + effectiveShiftAmount >= self.count ? $0 + effectiveShiftAmount - self.count : $0 + effectiveShiftAmount }
+
+        return self.enumerated().sorted(by: { shift($0.offset) < shift($1.offset) }).map { $0.element }
+    }
 }
 
 func delay(_ delay:Double, closure:@escaping ()->()) {
