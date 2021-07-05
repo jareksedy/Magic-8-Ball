@@ -47,7 +47,7 @@ class ViewController: UIViewController {
     let springDamping: CGFloat = 0.30
     let springVelocity: CGFloat = 0.10
     
-    let circularAnimationSteps: Int = 90
+    let circularAnimationSteps: Int = 64
     var circularAnimationPoints = [CGPoint]()
     var circularAnimationIndex = 0
     
@@ -108,7 +108,7 @@ class ViewController: UIViewController {
         ballNumberCircle.addSubview(ballNumber)
         
         buildCircleAnimationPoints()
-        drawAnimationPath(circularAnimationPoints)
+        //drawAnimationPath(circularAnimationPoints)
         
         moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
 
@@ -201,7 +201,7 @@ class ViewController: UIViewController {
         
         moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
         
-        UIView.animateKeyframes(withDuration: 1.25, delay: 0, options: [],
+        UIView.animateKeyframes(withDuration: 1.0, delay: 0, options: [],
                                 animations: {
                                     var index = self.circularAnimationPoints.getBottom()
                                     for _ in self.circularAnimationPoints.getBottom()...self.circularAnimationPoints.getTop() - 1 {
@@ -225,7 +225,7 @@ class ViewController: UIViewController {
         
         moveTo(circularAnimationPoints[circularAnimationPoints.getTop()])
         
-        UIView.animateKeyframes(withDuration: 1.25, delay: 0, options: [],
+        UIView.animateKeyframes(withDuration: 1.0, delay: 0, options: [],
                                 animations: {
                                     var index = self.circularAnimationPoints.getTop()
                                     for _ in self.circularAnimationPoints.getBottom()...self.circularAnimationPoints.getTop() - 1 {
