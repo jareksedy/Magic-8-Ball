@@ -63,7 +63,7 @@ class ViewController: UIViewController {
         initialViewSetup()
         createPanGestureRecognizer(targetView: bgView)
         createTapGestureRecognizer(targetView: ball)
-        initialAnimations()
+        animateToTop()
     }
     
     func initialViewSetup() {
@@ -101,40 +101,22 @@ class ViewController: UIViewController {
         
         ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
 
-        ballNumberCircle.layer.transform = getTransform(ballNumberCircle)
+        ballNumberCircle.layer.transform = getTransform(CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY))
         
         bgView.addSubview(ball)
         ball.addSubview(ballNumberCircle)
         ballNumberCircle.addSubview(ballNumber)
         
         buildCircleAnimationPoints()
-        drawCircleAnimationPath()
+        drawAnimationPath(circularAnimationPoints)
         
-        moveTo(circularAnimationPoints[0])
+        moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
 
     }
     
     // MARK: - 3d functions.
     
-    func getTransform(_ ball: UIView) -> CATransform3D {
-        
-        var transform: CATransform3D = CATransform3DIdentity
-        var rotationAngleX: CGFloat = 0.0
-        var rotationAngleY: CGFloat = 0.0
-        
-        rotationAngleX = (ball.center.y - ball.bounds.width + 25) / 3.5 * -1
-        rotationAngleY = (ball.center.x - ball.bounds.height + 25) / 3.5
-        
-        transform = CATransform3DIdentity
-        transform.m34 = -1 / pValue
-        
-        transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
-        transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
-        
-        return transform
-    }
-    
-    func getTransformForPoint(_ point: CGPoint) -> CATransform3D {
+    func getTransform(_ point: CGPoint) -> CATransform3D {
         
         var transform: CATransform3D = CATransform3DIdentity
         var rotationAngleX: CGFloat = 0.0
@@ -149,6 +131,10 @@ class ViewController: UIViewController {
         transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
         transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
         
+        let scaleFactor: CGFloat = 1.0
+        
+        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor)
+        
         return transform
     }
     
@@ -156,21 +142,21 @@ class ViewController: UIViewController {
     
     func moveTo(_ point: CGPoint) {
         ballNumberCircle.center = point
-        ballNumberCircle.layer.transform = getTransformForPoint(CGPoint(x: ballNumberCircle.center.x, y: ballNumberCircle.center.y))
+        ballNumberCircle.layer.transform = getTransform(CGPoint(x: ballNumberCircle.center.x, y: ballNumberCircle.center.y))
     }
     
     // MARK: - Animation points functions.
     
     func buildCircleAnimationPoints() {        
         circularAnimationPoints = getCircularAnimationPoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
-                                                         radius: ballSize / 3.25,
-                                                         steps: circularAnimationSteps)
+                                                             radius: ballSize / 3.0,
+                                                             steps: circularAnimationSteps)
     }
     
-    func drawCircleAnimationPath() {
+    func drawAnimationPath(_ pointArray: [CGPoint]) {
         let path = UIBezierPath()
-        path.move(to: circularAnimationPoints[0])
-        circularAnimationPoints.forEach { point in path.addLine(to: point) }
+        path.move(to: pointArray[0])
+        pointArray.forEach { point in path.addLine(to: point) }
         path.close()
         
         let layer = CAShapeLayer()
@@ -209,6 +195,54 @@ class ViewController: UIViewController {
                                 completion: nil)
     }
     
+    func animateToTop() {
+        var relStartTime: TimeInterval = 0.0
+        let relDuration: TimeInterval = 1 / Double(circularAnimationSteps)
+        
+        moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
+        
+        UIView.animateKeyframes(withDuration: 1.25, delay: 0, options: [],
+                                animations: {
+                                    var index = self.circularAnimationPoints.getBottom()
+                                    for _ in self.circularAnimationPoints.getBottom()...self.circularAnimationPoints.getTop() - 1 {
+                                        if index < self.circularAnimationPoints.count - 1 {
+                                            index += 1
+                                        } else {
+                                            index = 0
+                                        }
+                                        UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
+                                            self.moveTo(self.circularAnimationPoints[index])
+                                        })
+                                        relStartTime += relDuration
+                                    }
+                                },
+                                completion: nil)
+    }
+    
+    func animateToBottom() {
+        var relStartTime: TimeInterval = 0.0
+        let relDuration: TimeInterval = 1 / Double(circularAnimationSteps)
+        
+        moveTo(circularAnimationPoints[circularAnimationPoints.getTop()])
+        
+        UIView.animateKeyframes(withDuration: 1.25, delay: 0, options: [],
+                                animations: {
+                                    var index = self.circularAnimationPoints.getTop()
+                                    for _ in self.circularAnimationPoints.getBottom()...self.circularAnimationPoints.getTop() - 1 {
+                                        if index < self.circularAnimationPoints.count - 1 {
+                                            index += 1
+                                        } else {
+                                            index = 0
+                                        }
+                                        UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
+                                            self.moveTo(self.circularAnimationPoints[index])
+                                        })
+                                        relStartTime += relDuration
+                                    }
+                                },
+                                completion: nil)
+    }
+    
     // MARK: - Create gestures.
     
     func createPanGestureRecognizer(targetView: UIView) {
@@ -225,21 +259,8 @@ class ViewController: UIViewController {
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         
-        //let topCenterIndex = circularAnimationPoints.map{$0.y}.firstIndex(of: circularAnimationPoints.min{ $0.y < $1.y }!.y) ?? 0
-        let bottomCenterIndex = circularAnimationPoints.map{$0.y}.firstIndex(of: circularAnimationPoints.max{ $0.y < $1.y }!.y) ?? 0
+        ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop()] ? animateToBottom() : animateToTop()
 
-        //print(topCenterIndex, bottomCenterIndex)
-
-        moveTo(circularAnimationPoints[bottomCenterIndex])
-        
-        
-//        initialAnimations()
-//        if animationIndex >= animationSteps {
-//            animationIndex = 0
-//        }
-//
-//        moveTo(animationPoints[animationIndex])
-//        animationIndex += 1
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {

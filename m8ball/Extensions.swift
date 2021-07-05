@@ -17,6 +17,16 @@ func getCircularAnimationPoints(centerPoint: CGPoint, radius: CGFloat, steps: In
     return result
 }
 
+extension Array where Element == CGPoint {
+    func getTop () -> Int {
+        return self.map{$0.y}.firstIndex(of: self.min{ $0.y < $1.y }!.y) ?? 0
+    }
+    
+    func getBottom () -> Int {
+        return self.map{$0.y}.firstIndex(of: self.max{ $0.y < $1.y }!.y) ?? 0
+    }
+}
+
 extension Array {
     func shifted(by shiftAmount: Int) -> Array<Element> {
         guard self.count > 0, (shiftAmount % self.count) != 0 else { return self }
