@@ -47,9 +47,9 @@ class ViewController: UIViewController {
     let springDamping: CGFloat = 0.30
     let springVelocity: CGFloat = 0.10
     
-    let circleAnimationSteps: Int = 8
-    var circleAnimationPoints = [CGPoint]()
-    var circleAnimationIndex = 0
+    let circularAnimationSteps: Int = 90
+    var circularAnimationPoints = [CGPoint]()
+    var circularAnimationIndex = 0
     
     // MARK: - Transforms.
     
@@ -110,7 +110,7 @@ class ViewController: UIViewController {
         buildCircleAnimationPoints()
         drawCircleAnimationPath()
         
-        moveTo(circleAnimationPoints[0])
+        moveTo(circularAnimationPoints[0])
 
     }
     
@@ -162,15 +162,15 @@ class ViewController: UIViewController {
     // MARK: - Animation points functions.
     
     func buildCircleAnimationPoints() {        
-        circleAnimationPoints = getCircleAnimationPoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
+        circularAnimationPoints = getCircularAnimationPoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
                                                          radius: ballSize / 3.25,
-                                                         steps: circleAnimationSteps)
+                                                         steps: circularAnimationSteps)
     }
     
     func drawCircleAnimationPath() {
         let path = UIBezierPath()
-        path.move(to: circleAnimationPoints[0])
-        circleAnimationPoints.forEach { point in path.addLine(to: point) }
+        path.move(to: circularAnimationPoints[0])
+        circularAnimationPoints.forEach { point in path.addLine(to: point) }
         path.close()
         
         let layer = CAShapeLayer()
@@ -187,19 +187,19 @@ class ViewController: UIViewController {
     
     func initialAnimations() {
         var relStartTime: TimeInterval = 0.0
-        let relDuration: TimeInterval = 1 / Double(circleAnimationSteps)
+        let relDuration: TimeInterval = 1 / Double(circularAnimationSteps)
         
         UIView.animateKeyframes(withDuration: 1.0,
                                 delay: 0,
                                 options: [],
                                 animations: {
 
-                                    for i in 0...self.circleAnimationSteps - 1 {
+                                    for i in 0...self.circularAnimationSteps - 1 {
 
                                         UIView.addKeyframe(withRelativeStartTime: relStartTime,
                                                            relativeDuration: relDuration,
                                                            animations: {
-                                                            self.moveTo(self.circleAnimationPoints[i])
+                                                            self.moveTo(self.circularAnimationPoints[i])
                                                            })
                                         
                                         relStartTime += relDuration
@@ -225,16 +225,15 @@ class ViewController: UIViewController {
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         
-//        let topCenterIndex = circleAnimationPoints.map{$0.y}.firstIndex(of: circleAnimationPoints.min{ $0.y < $1.y }!.y) ?? 0
-//        let bottomCenterIndex = circleAnimationPoints.map{$0.y}.firstIndex(of: circleAnimationPoints.max{ $0.y < $1.y }!.y) ?? 0
-//
-//        print(topCenterIndex, bottomCenterIndex)
-//
-//        moveTo(circleAnimationPoints[bottomCenterIndex])
+        //let topCenterIndex = circularAnimationPoints.map{$0.y}.firstIndex(of: circularAnimationPoints.min{ $0.y < $1.y }!.y) ?? 0
+        let bottomCenterIndex = circularAnimationPoints.map{$0.y}.firstIndex(of: circularAnimationPoints.max{ $0.y < $1.y }!.y) ?? 0
+
+        //print(topCenterIndex, bottomCenterIndex)
+
+        moveTo(circularAnimationPoints[bottomCenterIndex])
         
-        //let topPointIndex = circleAnimationPoints.firstIndex(of: <#T##CGPoint#>)
         
-        initialAnimations()
+//        initialAnimations()
 //        if animationIndex >= animationSteps {
 //            animationIndex = 0
 //        }
