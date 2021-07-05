@@ -47,7 +47,7 @@ class ViewController: UIViewController {
     let springDamping: CGFloat = 0.30
     let springVelocity: CGFloat = 0.10
     
-    let circleAnimationSteps: Int = 8
+    let circleAnimationSteps: Int = 90
     var circleAnimationPoints = [CGPoint]()
     var circleAnimationIndex = 0
     
@@ -107,7 +107,7 @@ class ViewController: UIViewController {
         ball.addSubview(ballNumberCircle)
         ballNumberCircle.addSubview(ballNumber)
         
-        createCircleAnimationPoints()
+        buildCircleAnimationPoints()
         drawCircleAnimationPath()
         
         moveTo(circleAnimationPoints[0])
@@ -161,7 +161,7 @@ class ViewController: UIViewController {
     
     // MARK: - Animation points functions.
     
-    func createCircleAnimationPoints() {
+    func buildCircleAnimationPoints() {
         circleAnimationPoints = getCircleAnimationPoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
                                           radius: ballSize / 3.10,
                                           steps: circleAnimationSteps)
