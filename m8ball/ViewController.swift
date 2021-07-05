@@ -47,7 +47,7 @@ class ViewController: UIViewController {
     let springDamping: CGFloat = 0.30
     let springVelocity: CGFloat = 0.10
     
-    let circleAnimationSteps: Int = 90
+    let circleAnimationSteps: Int = 8
     var circleAnimationPoints = [CGPoint]()
     var circleAnimationIndex = 0
     
@@ -171,7 +171,7 @@ class ViewController: UIViewController {
         let path = UIBezierPath()
         path.move(to: circleAnimationPoints[0])
         circleAnimationPoints.forEach { point in path.addLine(to: point) }
-        //path.close()
+        path.close()
         
         let layer = CAShapeLayer()
         layer.path = path.cgPath
@@ -201,8 +201,8 @@ class ViewController: UIViewController {
                                                            animations: {
                                                             self.moveTo(self.circleAnimationPoints[i])
                                                            })
-                                        relStartTime += 1 / Double(self.circleAnimationSteps)
-
+                                        
+                                        relStartTime += relDuration
                                     }
 
                                 },
@@ -224,6 +224,16 @@ class ViewController: UIViewController {
     // MARK: - Handle gestures.
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
+        
+//        let topCenterIndex = circleAnimationPoints.map{$0.y}.firstIndex(of: circleAnimationPoints.min{ $0.y < $1.y }!.y) ?? 0
+//        let bottomCenterIndex = circleAnimationPoints.map{$0.y}.firstIndex(of: circleAnimationPoints.max{ $0.y < $1.y }!.y) ?? 0
+//
+//        print(topCenterIndex, bottomCenterIndex)
+//
+//        moveTo(circleAnimationPoints[bottomCenterIndex])
+        
+        //let topPointIndex = circleAnimationPoints.firstIndex(of: <#T##CGPoint#>)
+        
         initialAnimations()
 //        if animationIndex >= animationSteps {
 //            animationIndex = 0
