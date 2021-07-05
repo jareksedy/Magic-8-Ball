@@ -25,6 +25,9 @@ extension Array where Element == CGPoint {
     func getBottom () -> Int {
         return self.map{$0.y}.firstIndex(of: self.max{ $0.y < $1.y }!.y)!
     }
+    func getCurrent (point: CGPoint) -> Int? {
+        return self.firstIndex(of: point)
+    }
 }
 
 extension Array {
@@ -46,10 +49,10 @@ func delay(_ delay:Double, closure:@escaping ()->()) {
     DispatchQueue.main.asyncAfter(deadline: when, execute: closure)
 }
 
-extension Double {
-    func roundTo(places: Int) -> Double {
+extension CGFloat {
+    func roundTo(places: Int) -> CGFloat {
         let divisor = pow(10.0, Double(places))
-        return (self * divisor).rounded() / divisor
+        return CGFloat((Double(self) * divisor).rounded() / divisor)
     }
 }
 

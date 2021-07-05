@@ -42,7 +42,7 @@ class ViewController: UIViewController {
     
     // MARK: - Animation data & options.
     
-    let animationDuration: TimeInterval = 1.75
+    let animationDuration: TimeInterval = 2.0
     let initialDelay: TimeInterval = 0.5
     let springDamping: CGFloat = 0.30
     let springVelocity: CGFloat = 0.10
@@ -131,9 +131,8 @@ class ViewController: UIViewController {
         transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
         transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
         
-        let scaleFactor: CGFloat = 1.0
-        
-        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor)
+//        let scaleFactor: CGFloat = 1.0 //0.40 * (point.y - ballSize * 2) / 360
+//        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor)
         
         return transform
     }
@@ -171,13 +170,39 @@ class ViewController: UIViewController {
     
     // MARK: - Animation functions.
     
+    func shiftAnimate(_ distance: Int) {
+        var relStartTime: TimeInterval = 0.0
+        let relDuration: TimeInterval = abs(1 / Double(distance))
+        
+        let currentIndex = circularAnimationPoints.getCurrent(point: CGPoint(x: ballNumberCircle.center.x, y: ballNumberCircle.center.y)) ?? 0
+        
+        moveTo(circularAnimationPoints[currentIndex])
+        
+        UIView.animateKeyframes(withDuration: animationDuration / 4, delay: 0, options: [.allowUserInteraction],
+                                animations: {
+                                    var index = currentIndex
+                                    for _ in currentIndex...currentIndex + distance - 1 {
+                                        if index < self.circularAnimationPoints.count - 1 {
+                                            index += 1
+                                        } else {
+                                            index = 0
+                                        }
+                                        UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
+                                            self.moveTo(self.circularAnimationPoints[index])
+                                        })
+                                        relStartTime += relDuration
+                                    }
+                                },
+                                completion: nil)
+    }
+    
     func animateToTop() {
         var relStartTime: TimeInterval = 0.0
         let relDuration: TimeInterval = 1 / Double(circularAnimationSteps)
         
         moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
         
-        UIView.animateKeyframes(withDuration: 1.0, delay: 0, options: [.allowUserInteraction],
+        UIView.animateKeyframes(withDuration: animationDuration, delay: 0, options: [.allowUserInteraction],
                                 animations: {
                                     var index = self.circularAnimationPoints.getBottom()
                                     for _ in self.circularAnimationPoints.getBottom()...self.circularAnimationPoints.getTop() - 1 {
@@ -201,7 +226,7 @@ class ViewController: UIViewController {
         
         moveTo(circularAnimationPoints[circularAnimationPoints.getTop()])
         
-        UIView.animateKeyframes(withDuration: 1.0, delay: 0, options: [.allowUserInteraction],
+        UIView.animateKeyframes(withDuration: animationDuration, delay: 0, options: [.allowUserInteraction],
                                 animations: {
                                     var index = self.circularAnimationPoints.getTop()
                                     for _ in self.circularAnimationPoints.getBottom()...self.circularAnimationPoints.getTop() - 1 {
@@ -234,9 +259,8 @@ class ViewController: UIViewController {
     // MARK: - Handle gestures.
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
-        
-        ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop()] ? animateToBottom() : animateToTop()
-
+        //ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop()] ? animateToBottom() : animateToTop()
+        shiftAnimate(14)
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
