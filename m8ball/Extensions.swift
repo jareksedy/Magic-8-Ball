@@ -7,7 +7,7 @@
 
 import UIKit
 
-func getCirclePoints(centerPoint: CGPoint, radius: CGFloat, steps: Int)->[CGPoint] {
+func getCircleAnimationPoints(centerPoint: CGPoint, radius: CGFloat, steps: Int)->[CGPoint] {
     let result: [CGPoint] = stride(from: 0.0, to: 360.0, by: Double(360 / steps)).map {
         let bearing = CGFloat($0) * .pi / 180
         let x = centerPoint.x + radius * cos(bearing)

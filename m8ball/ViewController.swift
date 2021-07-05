@@ -8,20 +8,20 @@
 import UIKit
 
 class ViewController: UIViewController {
-
-    // MARK: - Debug info.
     
-    let debugInfoLabel = UILabel()
+    // MARK: - Outlets.
+            
+    @IBOutlet weak var bgView: UIView!
     
     // MARK: - Views.
     
     let ball = UIView()
     let ballNumberCircle = UIView()
     let ballNumber = UIImageView()
+
+    // MARK: - Debug info.
     
-    // MARK: - Outlets.
-            
-    @IBOutlet weak var bgView: UIView!
+    let debugInfoLabel = UILabel()
     
     // MARK: - Colors.
     
@@ -35,31 +35,27 @@ class ViewController: UIViewController {
     let ballSize: CGFloat = 500.0
     let ballNumberCircleSize: CGFloat = 275.0
     
-    // MARK: - Angles, boundaries & stuff.
+    // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
     let pValue: CGFloat = 400.0
     
-    // MARK: - Animation options.
+    // MARK: - Animation data & options.
     
     let animationDuration: TimeInterval = 1.75
     let initialDelay: TimeInterval = 0.5
     let springDamping: CGFloat = 0.30
     let springVelocity: CGFloat = 0.10
     
-    let animationSteps: Int = 90
-    var animationPoints = [CGPoint]()
-    var animationIndex = 0
+    let circleAnimationSteps: Int = 8
+    var circleAnimationPoints = [CGPoint]()
+    var circleAnimationIndex = 0
     
     // MARK: - Transforms.
     
     var transform = CATransform3DIdentity
     
     // MARK: - Code.
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
     
     override func viewDidLayoutSubviews() {
         
@@ -111,10 +107,10 @@ class ViewController: UIViewController {
         ball.addSubview(ballNumberCircle)
         ballNumberCircle.addSubview(ballNumber)
         
-        createAnimationPoints()
-        drawAnimationPath()
+        createCircleAnimationPoints()
+        drawCircleAnimationPath()
         
-        moveTo(animationPoints[0])
+        moveTo(circleAnimationPoints[0])
 
     }
     
@@ -163,18 +159,18 @@ class ViewController: UIViewController {
         ballNumberCircle.layer.transform = getTransformForPoint(CGPoint(x: ballNumberCircle.center.x, y: ballNumberCircle.center.y))
     }
     
-    // MARK: - Temp.
+    // MARK: - Animation points functions.
     
-    func createAnimationPoints() {
-        animationPoints = getCirclePoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
+    func createCircleAnimationPoints() {
+        circleAnimationPoints = getCircleAnimationPoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
                                           radius: ballSize / 3.10,
-                                          steps: animationSteps)
+                                          steps: circleAnimationSteps)
     }
     
-    func drawAnimationPath() {
+    func drawCircleAnimationPath() {
         let path = UIBezierPath()
-        path.move(to: animationPoints[0])
-        animationPoints.forEach { point in path.addLine(to: point) }
+        path.move(to: circleAnimationPoints[0])
+        circleAnimationPoints.forEach { point in path.addLine(to: point) }
         path.close()
         
         let layer = CAShapeLayer()
@@ -191,21 +187,21 @@ class ViewController: UIViewController {
     
     func initialAnimations() {
         var relStartTime: TimeInterval = 0.0
-        let relDuration: TimeInterval = 1 / Double(animationSteps)
+        let relDuration: TimeInterval = 1 / Double(circleAnimationSteps)
         
         UIView.animateKeyframes(withDuration: 1.0,
                                 delay: 0,
                                 options: [],
                                 animations: {
 
-                                    for i in 0...self.animationSteps - 1 {
+                                    for i in 0...self.circleAnimationSteps - 1 {
 
                                         UIView.addKeyframe(withRelativeStartTime: relStartTime,
                                                            relativeDuration: relDuration,
                                                            animations: {
-                                                            self.moveTo(self.animationPoints[i])
+                                                            self.moveTo(self.circleAnimationPoints[i])
                                                            })
-                                        relStartTime += 1 / Double(self.animationSteps)
+                                        relStartTime += 1 / Double(self.circleAnimationSteps)
 
                                     }
 
@@ -213,21 +209,7 @@ class ViewController: UIViewController {
                                 completion: nil)
     }
     
-    func animateToOrigin(_ delay: TimeInterval = 0.0) {
-        UIView.animate(withDuration: animationDuration / 4,
-                       delay: delay,
-                       usingSpringWithDamping: springDamping,
-                       initialSpringVelocity: springVelocity,
-                       options: [.allowUserInteraction, .curveEaseInOut],
-                       animations: {
-                        self.ballNumberCircle.center.x = self.ball.bounds.midX
-                        self.ballNumberCircle.center.y = self.ball.bounds.minY + self.ballTopBottomBoundary
-                        self.ballNumberCircle.layer.transform = self.getTransform(self.ballNumberCircle)
-                       },
-                       completion: nil)
-    }
-    
-    // MARK: - Gestures.
+    // MARK: - Create gestures.
     
     func createPanGestureRecognizer(targetView: UIView) {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(recognizer:)))
@@ -238,6 +220,8 @@ class ViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:)))
         targetView.addGestureRecognizer(tapGesture)
     }
+    
+    // MARK: - Handle gestures.
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         initialAnimations()
