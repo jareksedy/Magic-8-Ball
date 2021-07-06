@@ -170,7 +170,7 @@ class ViewController: UIViewController {
     
     // MARK: - Animation functions.
     
-    func shiftAnimate(_ distance: Int, duration: TimeInterval? = nil) {
+    func shiftAnimate(to distance: Int, duration: TimeInterval? = nil, completionHandler: ((Bool) -> ())? = nil) {
         var relStartTime: TimeInterval = 0.0
         let relDuration: TimeInterval = abs(1 / Double(distance))
         
@@ -179,7 +179,7 @@ class ViewController: UIViewController {
         
         moveTo(circularAnimationPoints[currentIndex])
         
-        UIView.animateKeyframes(withDuration: duration ?? Double(distance) * 0.05, delay: 0, options: [.allowUserInteraction],
+        UIView.animateKeyframes(withDuration: duration ?? Double(distance) * 0.025, delay: 0, options: [.allowUserInteraction],
                                 animations: {
                                     var index = currentIndex
                                     let toIndex = shiftNegative ? currentIndex - distance - 1 : currentIndex + distance - 1
@@ -195,55 +195,23 @@ class ViewController: UIViewController {
                                         relStartTime += relDuration
                                     }
                                 },
-                                completion: nil)
+                                completion: completionHandler)
     }
     
     func animateToTop() {
-        var relStartTime: TimeInterval = 0.0
-        let relDuration: TimeInterval = 1 / Double(circularAnimationSteps)
-        
         moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
-        
-        UIView.animateKeyframes(withDuration: animationDuration, delay: 0, options: [.allowUserInteraction],
-                                animations: {
-                                    var index = self.circularAnimationPoints.getBottom()
-                                    for _ in self.circularAnimationPoints.getBottom()...self.circularAnimationPoints.getTop() - 1 {
-                                        if index < self.circularAnimationPoints.count - 1 {
-                                            index += 1
-                                        } else {
-                                            index = 0
-                                        }
-                                        UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
-                                            self.moveTo(self.circularAnimationPoints[index])
-                                        })
-                                        relStartTime += relDuration
-                                    }
-                                },
-                                completion: nil)
+        let deltaIndex = circularAnimationPoints.getBottom() - circularAnimationPoints.getTop()
+        shiftAnimate(to: -deltaIndex)
     }
     
     func animateToBottom() {
-        var relStartTime: TimeInterval = 0.0
-        let relDuration: TimeInterval = 1 / Double(circularAnimationSteps)
-        
         moveTo(circularAnimationPoints[circularAnimationPoints.getTop()])
-        
-        UIView.animateKeyframes(withDuration: animationDuration, delay: 0, options: [.allowUserInteraction],
-                                animations: {
-                                    var index = self.circularAnimationPoints.getTop()
-                                    for _ in self.circularAnimationPoints.getBottom()...self.circularAnimationPoints.getTop() - 1 {
-                                        if index < self.circularAnimationPoints.count - 1 {
-                                            index += 1
-                                        } else {
-                                            index = 0
-                                        }
-                                        UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
-                                            self.moveTo(self.circularAnimationPoints[index])
-                                        })
-                                        relStartTime += relDuration
-                                    }
-                                },
-                                completion: nil)
+        let deltaIndex = circularAnimationPoints.getBottom() - circularAnimationPoints.getTop()
+        shiftAnimate(to: -deltaIndex)
+    }
+    
+    func animateFullCircle() {
+        shiftAnimate(to: circularAnimationSteps)
     }
     
     // MARK: - Create gestures.
@@ -261,8 +229,9 @@ class ViewController: UIViewController {
     // MARK: - Handle gestures.
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
+        animateFullCircle()
         //ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop()] ? animateToBottom() : animateToTop()
-        shiftAnimate(12, duration: 0.40)
+        //shiftAnimate(to: 12, duration: 0.40)
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
