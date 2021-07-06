@@ -131,8 +131,8 @@ class ViewController: UIViewController {
         transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
         transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
         
-        let scaleFactor: CGFloat = 0.40 * (point.y - ballSize * 2) / 360
-        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor)
+//        let scaleFactor: CGFloat = 0.40 * (point.y - ballSize * 2) / 360
+//        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor)
         
         return transform
     }
@@ -148,7 +148,7 @@ class ViewController: UIViewController {
     
     func buildCircleAnimationPoints() {        
         circularAnimationPoints = getCircularAnimationPoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
-                                                             radius: ballSize / 3.0,
+                                                             radius: ballSize / 2.80,
                                                              steps: circularAnimationSteps)
     }
     
