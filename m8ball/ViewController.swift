@@ -38,7 +38,7 @@ class ViewController: UIViewController {
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let pValue: CGFloat = 400.0
+    let pValue: CGFloat = 300.0
     
     // MARK: - Animation data & options.
     
