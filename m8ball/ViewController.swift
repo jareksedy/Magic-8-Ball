@@ -170,7 +170,7 @@ class ViewController: UIViewController {
     
     // MARK: - Animation functions.
     
-    func shiftAnimate(_ distance: Int) {
+    func shiftAnimate(_ distance: Int, duration: TimeInterval? = nil) {
         var relStartTime: TimeInterval = 0.0
         let relDuration: TimeInterval = abs(1 / Double(distance))
         
@@ -178,7 +178,7 @@ class ViewController: UIViewController {
         
         moveTo(circularAnimationPoints[currentIndex])
         
-        UIView.animateKeyframes(withDuration: animationDuration / 4, delay: 0, options: [.allowUserInteraction],
+        UIView.animateKeyframes(withDuration: duration ?? Double(distance) * 0.05, delay: 0, options: [.allowUserInteraction],
                                 animations: {
                                     var index = currentIndex
                                     for _ in currentIndex...currentIndex + distance - 1 {
@@ -260,7 +260,7 @@ class ViewController: UIViewController {
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         //ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop()] ? animateToBottom() : animateToTop()
-        shiftAnimate(14)
+        shiftAnimate(12, duration: 0.35)
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
