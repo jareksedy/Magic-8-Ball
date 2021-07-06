@@ -175,17 +175,19 @@ class ViewController: UIViewController {
         let relDuration: TimeInterval = abs(1 / Double(distance))
         
         let currentIndex = circularAnimationPoints.getCurrent(point: CGPoint(x: ballNumberCircle.center.x, y: ballNumberCircle.center.y)) ?? 0
+        let shiftNegative = distance < 0
         
         moveTo(circularAnimationPoints[currentIndex])
         
         UIView.animateKeyframes(withDuration: duration ?? Double(distance) * 0.05, delay: 0, options: [.allowUserInteraction],
                                 animations: {
                                     var index = currentIndex
-                                    for _ in currentIndex...currentIndex + distance - 1 {
-                                        if index < self.circularAnimationPoints.count - 1 {
-                                            index += 1
+                                    let toIndex = shiftNegative ? currentIndex - distance - 1 : currentIndex + distance - 1
+                                    for _ in currentIndex...toIndex {
+                                        if shiftNegative {
+                                            index = index > 0 ? index - 1 : self.circularAnimationPoints.count - 1
                                         } else {
-                                            index = 0
+                                            index = index < self.circularAnimationPoints.count - 1 ? index + 1 :  0
                                         }
                                         UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
                                             self.moveTo(self.circularAnimationPoints[index])
@@ -260,7 +262,7 @@ class ViewController: UIViewController {
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         //ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop()] ? animateToBottom() : animateToTop()
-        shiftAnimate(12, duration: 0.35)
+        shiftAnimate(12, duration: 0.40)
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
