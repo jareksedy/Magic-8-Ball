@@ -108,7 +108,7 @@ class ViewController: UIViewController {
         ballNumberCircle.addSubview(ballNumber)
         
         buildCircleAnimationPoints()
-        drawAnimationPath(circularAnimationPoints)
+        //drawAnimationPath(circularAnimationPoints)
         
         moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
 
@@ -172,50 +172,72 @@ class ViewController: UIViewController {
     
     func shiftAnimate(to distance: Int, duration: TimeInterval? = nil, completionHandler: ((Bool) -> ())? = nil, withSpringEffect: Bool? = false) {
         
+        func calculateShiftIndex(index: inout Int, signum: Int, upperBound: Int) {
+            if signum > 0 {
+                index = index < upperBound - 1 ? index + signum : 0
+            } else {
+                index = index > 0 ? index + signum : upperBound - 1
+            }
+        }
+        
         var addDistance: Int = 0
-        let springIntervals = [-12, 12]
+        let springIntervals = [5, -15, 10]
         
         if withSpringEffect != nil && withSpringEffect == true {
             addDistance = springIntervals.map{abs($0)}.reduce(0,+)
         }
         
         var relStartTime: TimeInterval = 0.0
-        let relDuration: TimeInterval = abs(1 / Double(distance + (addDistance / 2)))
+        let relDuration: TimeInterval = abs(1 / Double(distance + addDistance))
         
         let currentIndex = circularAnimationPoints.getCurrent(point: CGPoint(x: ballNumberCircle.center.x, y: ballNumberCircle.center.y)) ?? 0
         let shiftNegative = distance < 0
         
         moveTo(circularAnimationPoints[currentIndex])
         
-        UIView.animateKeyframes(withDuration: duration ?? Double(distance + addDistance / 2) * 0.025, delay: 0, options: [.allowUserInteraction],
+        UIView.animateKeyframes(withDuration: duration ?? Double(distance + addDistance) * 0.020, delay: 0, options: [.allowUserInteraction],
                                 animations: {
                                     var index = currentIndex
                                     let toIndex = shiftNegative ? currentIndex - distance - 1 : currentIndex + distance - 1
                                     
                                     for _ in currentIndex...toIndex {
+                                        
                                         if shiftNegative {
                                             index = index > 0 ? index - 1 : self.circularAnimationPoints.count - 1
                                         } else {
                                             index = index < self.circularAnimationPoints.count - 1 ? index + 1 : 0
                                         }
+                                        
                                         UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
                                             self.moveTo(self.circularAnimationPoints[index])
                                         })
+                                        
                                         relStartTime += relDuration
                                     }
                                     
                                     if withSpringEffect != nil && withSpringEffect == true {
+
                                         springIntervals.forEach { interval in
+
+                                            index = self.circularAnimationPoints.getCurrent(point: CGPoint(x: self.ballNumberCircle.center.x, y: self.ballNumberCircle.center.y)) ?? 0
+
                                             for _ in 0...abs(interval) - 1 {
+                                                
                                                 if shiftNegative {
-                                                    index = index > 0 ? index - interval.signum() : self.circularAnimationPoints.count - 1
+                                                    calculateShiftIndex(index: &index,
+                                                                        signum: interval.signum(),
+                                                                        upperBound: self.circularAnimationPoints.count)
                                                 } else {
-                                                    index = index < self.circularAnimationPoints.count - 1 ? index + interval.signum() : 0
+                                                    calculateShiftIndex(index: &index,
+                                                                        signum: interval.signum(),
+                                                                        upperBound: self.circularAnimationPoints.count)
                                                 }
+
                                                 UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
                                                     self.moveTo(self.circularAnimationPoints[index])
                                                 })
-                                                relStartTime += relDuration / 2
+
+                                                relStartTime += relDuration
                                             }
                                         }
                                     }
@@ -256,7 +278,7 @@ class ViewController: UIViewController {
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         //animateFullCircle()
         //ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop()] ? animateToBottom() : animateToTop()
-        shiftAnimate(to: -32, duration: 0.5, withSpringEffect: true)
+        shiftAnimate(to: 102, withSpringEffect: true)
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
