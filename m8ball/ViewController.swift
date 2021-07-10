@@ -181,7 +181,7 @@ class ViewController: UIViewController {
         }
         
         var addDistance: Int = 0
-        let springIntervals = [5, -15, 10]
+        let springIntervals = [15, -25, 10]
         
         if withSpringEffect != nil && withSpringEffect == true {
             addDistance = springIntervals.map{abs($0)}.reduce(0,+)
@@ -248,13 +248,13 @@ class ViewController: UIViewController {
     func animateToTop() {
         moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
         let deltaIndex = circularAnimationPoints.getBottom() - circularAnimationPoints.getTop()
-        shiftAnimate(to: -deltaIndex)
+        shiftAnimate(to: -deltaIndex + 4)
     }
     
     func animateToBottom() {
         moveTo(circularAnimationPoints[circularAnimationPoints.getTop()])
         let deltaIndex = circularAnimationPoints.getBottom() - circularAnimationPoints.getTop()
-        shiftAnimate(to: -deltaIndex)
+        shiftAnimate(to: -deltaIndex + 4)
     }
     
     func animateFullCircle() {
@@ -278,7 +278,7 @@ class ViewController: UIViewController {
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         //animateFullCircle()
         //ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop()] ? animateToBottom() : animateToTop()
-        shiftAnimate(to: -circularAnimationPoints.count, duration: 2.0, withSpringEffect: false)
+        shiftAnimate(to: circularAnimationPoints.count * 4, duration: 4.25, withSpringEffect: false)
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
