@@ -278,7 +278,7 @@ class ViewController: UIViewController {
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         //animateFullCircle()
         //ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop()] ? animateToBottom() : animateToTop()
-        shiftAnimate(to: 102, withSpringEffect: true)
+        shiftAnimate(to: -circularAnimationPoints.count, duration: 2.0, withSpringEffect: false)
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
