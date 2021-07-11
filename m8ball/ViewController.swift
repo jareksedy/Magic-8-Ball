@@ -34,14 +34,14 @@ class ViewController: UIViewController {
     
     // MARK: - Sizes.
     
-    let ballSize: CGFloat = 500.0
-    let ballNumberCircleSize: CGFloat = 275.0
-    let predictionViewSize: CGFloat = 275.0
+    var ballSize: CGFloat = 500.0
+    var ballNumberCircleSize: CGFloat = 275.0
+    var predictionViewSize: CGFloat = 275.0
     
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let shiftIndex: Int = 3
+    let shiftIndex: Int = 5
     
     // MARK: - Animation data & options.
     
@@ -89,11 +89,15 @@ class ViewController: UIViewController {
         
         // END DEBUG INFO
         
+        ballSize = bgView.bounds.width - 20
+        ballNumberCircleSize = (bgView.bounds.width - 20) * 0.55
+        predictionViewSize = (bgView.bounds.width - 20) * 0.55
+        
         ball.frame = CGRect(x: 0, y: 0, width: ballSize, height: ballSize)
         ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
         predictionView.frame = CGRect(x: 0, y: 0, width: predictionViewSize, height: predictionViewSize)
         
-        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.midY/*maxY - ballSize / 2 - 50*/)
+        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballSize / 2 - 40)
         ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.midY)
         predictionView.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.midY)
         
