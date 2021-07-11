@@ -40,7 +40,7 @@ class ViewController: UIViewController {
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let shiftIndex: Int = 5
+    let shiftIndex: Int = 4
     let pValue: CGFloat = 300.0
     
     // MARK: - Animation data & options.
@@ -118,13 +118,13 @@ class ViewController: UIViewController {
         ball.addSubview(predictionView)
         ballNumberCircle.addSubview(ballNumber)
         
-        predictionView.isHidden = true
+        //predictionView.isHidden = true
         
         buildCircleAnimationPoints()
         //drawAnimationPath(circularAnimationPoints)
         
         moveTo(view: ballNumberCircle, point: circularAnimationPoints[circularAnimationPoints.getBottom(shiftIndex)])
-        moveTo(view: predictionView, point: circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)])
+        moveTo(view: predictionView, point: circularAnimationPoints[circularAnimationPoints.getBottom(shiftIndex)])
         
     }
     
@@ -145,8 +145,8 @@ class ViewController: UIViewController {
         transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
         transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
         
-        //        let scaleFactor: CGFloat = 0.40 * (point.y - ballSize * 2) / 360
-        //        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor)
+        let scaleFactor: CGFloat = 0.40 * (point.y - ballSize * 2) / 360
+        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor)
         
         return transform
     }
@@ -162,7 +162,7 @@ class ViewController: UIViewController {
     
     func buildCircleAnimationPoints() {        
         circularAnimationPoints = getCircularAnimationPoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
-                                                             radius: ballSize / 2.75,
+                                                             radius: ballSize / 2.95,
                                                              steps: circularAnimationSteps)
     }
     
@@ -277,11 +277,6 @@ class ViewController: UIViewController {
         
         shiftAnimate(view: ballNumberCircle, to: -deltaIndex)
         shiftAnimate(view: predictionView, to: -deltaIndex)
-    }
-    
-    func animateFullCircle() {
-        shiftAnimate(view: ballNumberCircle, to: circularAnimationPoints.count * 2)
-        shiftAnimate(view: predictionView, to: circularAnimationPoints.count * 2)
     }
     
     // MARK: - Create gestures.
