@@ -10,8 +10,8 @@ import UIKit
 func getCircularAnimationPoints(centerPoint: CGPoint, radius: CGFloat, steps: Int)->[CGPoint] {
     let result: [CGPoint] = stride(from: 0.0, to: 360.0, by: Double(360 / steps)).map {
         let radians = CGFloat($0) * .pi / 180
-        let x = centerPoint.x + radius * cos(radians) * 0.55
-        let y = centerPoint.y + radius * sin(radians) + 70
+        let x = centerPoint.x + radius * cos(radians) * 0.65 // default: 0.55
+        let y = centerPoint.y + radius * sin(radians) + (radius / 3.25)
         return CGPoint(x: x, y: y)
     }
     return result
@@ -74,5 +74,35 @@ extension UIView {
 
         layer.position = position
         layer.anchorPoint = point
+    }
+}
+
+extension UIImage {
+    func scalePreservingAspectRatio(targetSize: CGSize) -> UIImage {
+        // Determine the scale factor that preserves aspect ratio
+        let widthRatio = targetSize.width / size.width
+        let heightRatio = targetSize.height / size.height
+        
+        let scaleFactor = min(widthRatio, heightRatio)
+        
+        // Compute the new image size that preserves aspect ratio
+        let scaledImageSize = CGSize(
+            width: size.width * scaleFactor,
+            height: size.height * scaleFactor
+        )
+
+        // Draw and return the resized UIImage
+        let renderer = UIGraphicsImageRenderer(
+            size: scaledImageSize
+        )
+
+        let scaledImage = renderer.image { _ in
+            self.draw(in: CGRect(
+                origin: .zero,
+                size: scaledImageSize
+            ))
+        }
+        
+        return scaledImage
     }
 }

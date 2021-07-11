@@ -36,12 +36,12 @@ class ViewController: UIViewController {
     
     let ballSize: CGFloat = 500.0
     let ballNumberCircleSize: CGFloat = 275.0
+    let predictionViewSize: CGFloat = 275.0
     
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let shiftIndex: Int = 4
-    let pValue: CGFloat = 300.0
+    let shiftIndex: Int = 3
     
     // MARK: - Animation data & options.
     
@@ -78,40 +78,43 @@ class ViewController: UIViewController {
         
         // DEBUG INFO
         
-        //        debugInfoLabel.text = ""
-        //        debugInfoLabel.font = UIFont.monospacedSystemFont(ofSize: 10, weight: UIFont.Weight.regular)
-        //        debugInfoLabel.sizeToFit()
-        //        debugInfoLabel.textColor = UIColor.white
-        //        debugInfoLabel.textAlignment = .center
-        //        debugInfoLabel.center.x = bgView.bounds.midX
-        //        debugInfoLabel.center.y = bgView.bounds.minY + 50
-        //        bgView.addSubview(debugInfoLabel)
+//        debugInfoLabel.text = ""
+//        debugInfoLabel.font = UIFont.monospacedSystemFont(ofSize: 10, weight: UIFont.Weight.regular)
+//        debugInfoLabel.sizeToFit()
+//        debugInfoLabel.textColor = UIColor.white
+//        debugInfoLabel.textAlignment = .center
+//        debugInfoLabel.center.x = bgView.bounds.midX
+//        debugInfoLabel.center.y = bgView.bounds.minY + 50
+//        bgView.addSubview(debugInfoLabel)
         
         // END DEBUG INFO
         
         ball.frame = CGRect(x: 0, y: 0, width: ballSize, height: ballSize)
         ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
-        predictionView.frame = ballNumberCircle.frame
+        predictionView.frame = CGRect(x: 0, y: 0, width: predictionViewSize, height: predictionViewSize)
         
         ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.midY/*maxY - ballSize / 2 - 50*/)
-        ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.minY + ballTopBottomBoundary)
-        predictionView.center = ballNumberCircle.center
+        ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.midY)
+        predictionView.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.midY)
         
         ball.layer.cornerRadius = ballSize / 2
         //ball.layer.maskedCorners = [.layerMinXMinYCorner,.layerMaxXMinYCorner]
         ballNumberCircle.layer.cornerRadius = ballNumberCircleSize / 2
-        predictionView.layer.cornerRadius = ballNumberCircle.layer.cornerRadius
+        predictionView.layer.cornerRadius = predictionViewSize / 2
         
         ball.layer.masksToBounds = true
         
-        ballNumber.image = UIImage(named: "8")
+        ballNumber.image = UIImage(named: "8")!
+            .scalePreservingAspectRatio(targetSize: CGSize(width: ballNumberCircleSize, height: ballNumberCircleSize - ballSize / 7))
+            .withRenderingMode(.alwaysTemplate)
+        
         ballNumber.tintColor = ballNumberColor
         ballNumber.sizeToFit()
         
         ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
         
         ballNumberCircle.layer.transform = getTransform(CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY))
-        predictionView.layer.transform = ballNumberCircle.layer.transform
+        predictionView.layer.transform = getTransform(CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY))
         
         bgView.addSubview(ball)
         ball.addSubview(ballNumberCircle)
@@ -134,19 +137,29 @@ class ViewController: UIViewController {
         var rotationAngleX: CGFloat = 0.0
         var rotationAngleY: CGFloat = 0.0
         
-        rotationAngleX = (point.y - ballNumberCircleSize + 25) / 3.5 * -1
-        rotationAngleY = (point.x - ballNumberCircleSize + 25) / 3.5
+        let divider = ballNumberCircleSize / 75
+        let multiplier = 195 / ballSize
+        let pF = ballNumberCircleSize / 11
         
-        transform = CATransform3DIdentity
-        transform.m34 = -1 / pValue
+        rotationAngleX = (point.y - ballNumberCircleSize + pF) / divider * -1
+        rotationAngleY = (point.x - ballNumberCircleSize + pF) / divider
         
-        let scaleFactor: CGFloat = 0.40 * (point.y - ballSize * 2) / 360
-        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor)
+        transform.m34 = -1 / (pF + ballNumberCircleSize)
+        
+        let sF = multiplier * (point.y - ballSize * 2) / 360
+        transform = CATransform3DScale(transform, sF, sF, sF)
         
         transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
         transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
+        //transform = CATransform3DRotate(transform, -rotationAngleY * .pi / 45, 0, 0, 1)
         
-        //transform = CATransform3DRotate(transform, rotationAngleY * .pi / 360, 0, 0, 1)
+        // DEBUG INFO
+        
+//        debugInfoLabel.text = "A(X): \(rotationAngleX.roundTo(places: 2))° A(Y): \(rotationAngleY.roundTo(places: 2))° C.X: \(ballNumberCircle.center.x.roundTo(places: 2)) C.Y: \(ballNumberCircle.center.y.roundTo(places: 2))"
+//        debugInfoLabel.center.x = bgView.bounds.midX
+//        debugInfoLabel.sizeToFit()
+        
+        // END DEBUG INFO
         
         return transform
     }
@@ -294,8 +307,9 @@ class ViewController: UIViewController {
     // MARK: - Handle gestures.
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
-        //animateFullCircle()
         ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)] ? animateToBottom() : animateToTop()
+        //moveTo(view: ballNumberCircle, point: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY))
+       //moveTo(view: ballNumberCircle, point: circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)])
     }
     
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
@@ -308,15 +322,6 @@ class ViewController: UIViewController {
         let pointY = ballNumberCircle.center.y + translation.y
         
         moveTo(view: ballNumberCircle, point: CGPoint(x: pointX, y: pointY))
-        
-        
-        // DEBUG INFO
-        
-        //        debugInfoLabel.text = "A(X): \(panRotationAngleX.roundTo(places: 2))° A(Y): \(panRotationAngleY.roundTo(places: 2))° C.X: \(Double(ballNumberCircle.center.x).roundTo(places: 2)) C.Y: \(Double(ballNumberCircle.center.y).roundTo(places: 2))"
-        //        debugInfoLabel.center.x = bgView.bounds.midX
-        //        debugInfoLabel.sizeToFit()
-        
-        // END DEBUG INFO
         
         switch recognizer.state {
         
