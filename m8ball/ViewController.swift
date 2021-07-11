@@ -41,7 +41,7 @@ class ViewController: UIViewController {
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let shiftIndex: Int = 5
+    let shiftIndex: Int = 3
     
     // MARK: - Animation data & options.
     
@@ -97,7 +97,7 @@ class ViewController: UIViewController {
         ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
         predictionView.frame = CGRect(x: 0, y: 0, width: predictionViewSize, height: predictionViewSize)
         
-        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballSize / 2 - 40)
+        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballSize / 2 - 10)
         ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.midY)
         predictionView.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.midY)
         
@@ -142,15 +142,15 @@ class ViewController: UIViewController {
         var rotationAngleY: CGFloat = 0.0
         
         let divider = ballNumberCircleSize / 75
-        let multiplier = 195 / ballSize
+        let multiplier = 200 / ballSize
         let pF = ballNumberCircleSize / 11
+        let sF = multiplier * (point.y - ballSize * 2) / 360
         
         rotationAngleX = (point.y - ballNumberCircleSize + pF) / divider * -1
         rotationAngleY = (point.x - ballNumberCircleSize + pF) / divider
         
         transform.m34 = -1 / (pF + ballNumberCircleSize)
         
-        let sF = multiplier * (point.y - ballSize * 2) / 360
         transform = CATransform3DScale(transform, sF, sF, sF)
         
         transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
