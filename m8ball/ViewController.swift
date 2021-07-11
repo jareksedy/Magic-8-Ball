@@ -93,7 +93,7 @@ class ViewController: UIViewController {
         ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
         predictionView.frame = ballNumberCircle.frame
         
-        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballSize / 2 - 50)
+        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.midY/*maxY - ballSize / 2 - 50*/)
         ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.minY + ballTopBottomBoundary)
         predictionView.center = ballNumberCircle.center
         
@@ -118,8 +118,6 @@ class ViewController: UIViewController {
         ball.addSubview(predictionView)
         ballNumberCircle.addSubview(ballNumber)
         
-        //predictionView.isHidden = true
-        
         buildCircleAnimationPoints()
         //drawAnimationPath(circularAnimationPoints)
         
@@ -142,11 +140,13 @@ class ViewController: UIViewController {
         transform = CATransform3DIdentity
         transform.m34 = -1 / pValue
         
+        let scaleFactor: CGFloat = 0.40 * (point.y - ballSize * 2) / 360
+        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor)
+        
         transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
         transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
         
-        let scaleFactor: CGFloat = 0.40 * (point.y - ballSize * 2) / 360
-        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, scaleFactor)
+        //transform = CATransform3DRotate(transform, rotationAngleY * .pi / 360, 0, 0, 1)
         
         return transform
     }
@@ -162,7 +162,7 @@ class ViewController: UIViewController {
     
     func buildCircleAnimationPoints() {        
         circularAnimationPoints = getCircularAnimationPoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
-                                                             radius: ballSize / 2.95,
+                                                             radius: ballSize / 2.0,
                                                              steps: circularAnimationSteps)
     }
     
