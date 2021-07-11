@@ -18,6 +18,7 @@ class ViewController: UIViewController {
     let ball = UIView()
     let ballNumberCircle = UIView()
     let ballNumber = UIImageView()
+    let predictionView = UIView()
 
     // MARK: - Debug info.
     
@@ -25,10 +26,11 @@ class ViewController: UIViewController {
     
     // MARK: - Colors.
     
-    let viewBgColor = UIColor.systemPink
-    let ballColor = UIColor.black
-    let ballNumberCircleColor = UIColor.white
-    let ballNumberColor = UIColor.black
+    let viewBgColor = UIColor(red: 0.40, green: 0.13, blue: 0.80, alpha: 1.00)
+    let ballColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.00)
+    let ballNumberColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.00)
+    let ballNumberCircleColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 1.00)
+    let predictionViewColor = UIColor(red: 0.07, green: 0.07, blue: 0.07, alpha: 1.00)
     
     // MARK: - Sizes.
     
@@ -38,6 +40,7 @@ class ViewController: UIViewController {
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
+    let shiftIndex: Int = 10
     let pValue: CGFloat = 300.0
     
     // MARK: - Animation data & options.
@@ -71,6 +74,7 @@ class ViewController: UIViewController {
         bgView.backgroundColor = viewBgColor
         ball.backgroundColor = ballColor
         ballNumberCircle.backgroundColor = ballNumberCircleColor
+        predictionView.backgroundColor = predictionViewColor
         
         // DEBUG INFO
         
@@ -87,30 +91,40 @@ class ViewController: UIViewController {
         
         ball.frame = CGRect(x: 0, y: 0, width: ballSize, height: ballSize)
         ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
+        predictionView.frame = ballNumberCircle.frame
         
-        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.midY /*bgView.bounds.maxY - ballSize / 2 + 100*/)
+        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballSize / 2 - 50)
         ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.minY + ballTopBottomBoundary)
+        predictionView.center = ballNumberCircle.center
         
         ball.layer.cornerRadius = ballSize / 2
+        //ball.layer.maskedCorners = [.layerMinXMinYCorner,.layerMaxXMinYCorner]
         ballNumberCircle.layer.cornerRadius = ballNumberCircleSize / 2
+        predictionView.layer.cornerRadius = ballNumberCircle.layer.cornerRadius
 
         ball.layer.masksToBounds = true
         
         ballNumber.image = UIImage(named: "8")
+        ballNumber.tintColor = ballNumberColor
         ballNumber.sizeToFit()
         
         ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
 
         ballNumberCircle.layer.transform = getTransform(CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY))
+        predictionView.layer.transform = ballNumberCircle.layer.transform
         
         bgView.addSubview(ball)
         ball.addSubview(ballNumberCircle)
+        ball.addSubview(predictionView)
         ballNumberCircle.addSubview(ballNumber)
         
-        buildCircleAnimationPoints()
-        //drawAnimationPath(circularAnimationPoints)
+        //predictionView.isHidden = true
         
-        moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
+        buildCircleAnimationPoints()
+        drawAnimationPath(circularAnimationPoints)
+        
+        moveTo(view: ballNumberCircle, point: circularAnimationPoints[circularAnimationPoints.getBottom(shiftIndex)])
+        moveTo(view: predictionView, point: circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)])
 
     }
     
@@ -139,9 +153,9 @@ class ViewController: UIViewController {
     
     // MARK: - Ball move functions.
     
-    func moveTo(_ point: CGPoint) {
-        ballNumberCircle.center = point
-        ballNumberCircle.layer.transform = getTransform(CGPoint(x: ballNumberCircle.center.x, y: ballNumberCircle.center.y))
+    func moveTo(view: UIView, point: CGPoint) {
+        view.center = point
+        view.layer.transform = getTransform(CGPoint(x: view.center.x, y: view.center.y))
     }
     
     // MARK: - Animation points functions.
@@ -170,7 +184,7 @@ class ViewController: UIViewController {
     
     // MARK: - Animation functions.
     
-    func shiftAnimate(to distance: Int, duration: TimeInterval? = nil, completionHandler: ((Bool) -> ())? = nil, withSpringEffect: Bool? = false) {
+    func shiftAnimate(view: UIView, to distance: Int, duration: TimeInterval? = nil, completionHandler: ((Bool) -> ())? = nil, withSpringEffect: Bool? = false) {
         
         func calculateShiftIndex(index: inout Int, signum: Int, upperBound: Int) {
             if signum > 0 {
@@ -190,10 +204,10 @@ class ViewController: UIViewController {
         var relStartTime: TimeInterval = 0.0
         let relDuration: TimeInterval = abs(1 / Double(distance + addDistance))
         
-        let currentIndex = circularAnimationPoints.getCurrent(point: CGPoint(x: ballNumberCircle.center.x, y: ballNumberCircle.center.y)) ?? 0
+        let currentIndex = circularAnimationPoints.getCurrent(point: CGPoint(x: view.center.x, y: view.center.y)) ?? 0
         let shiftNegative = distance < 0
         
-        moveTo(circularAnimationPoints[currentIndex])
+        moveTo(view: ballNumberCircle, point: circularAnimationPoints[currentIndex])
         
         UIView.animateKeyframes(withDuration: duration ?? Double(distance + addDistance) * 0.020, delay: 0, options: [.allowUserInteraction],
                                 animations: {
@@ -209,7 +223,7 @@ class ViewController: UIViewController {
                                         }
                                         
                                         UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
-                                            self.moveTo(self.circularAnimationPoints[index])
+                                            self.moveTo(view: view, point: self.circularAnimationPoints[index])
                                         })
                                         
                                         relStartTime += relDuration
@@ -219,7 +233,7 @@ class ViewController: UIViewController {
 
                                         springIntervals.forEach { interval in
 
-                                            index = self.circularAnimationPoints.getCurrent(point: CGPoint(x: self.ballNumberCircle.center.x, y: self.ballNumberCircle.center.y)) ?? 0
+                                            index = self.circularAnimationPoints.getCurrent(point: CGPoint(x: view.center.x, y: view.center.y)) ?? 0
 
                                             for _ in 0...abs(interval) - 1 {
                                                 
@@ -234,7 +248,7 @@ class ViewController: UIViewController {
                                                 }
 
                                                 UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
-                                                    self.moveTo(self.circularAnimationPoints[index])
+                                                    self.moveTo(view: view, point: self.circularAnimationPoints[index])
                                                 })
 
                                                 relStartTime += relDuration
@@ -246,19 +260,27 @@ class ViewController: UIViewController {
     }
     
     func animateToTop() {
-        moveTo(circularAnimationPoints[circularAnimationPoints.getBottom()])
-        let deltaIndex = circularAnimationPoints.getBottom() - circularAnimationPoints.getTop()
-        shiftAnimate(to: -deltaIndex + 4)
+        moveTo(view: ballNumberCircle, point: circularAnimationPoints[circularAnimationPoints.getBottom(shiftIndex)])
+        moveTo(view: predictionView, point: circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)])
+        
+        let deltaIndex = circularAnimationPoints.getBottom(shiftIndex) - circularAnimationPoints.getTop(shiftIndex)
+        
+        shiftAnimate(view: ballNumberCircle, to: -deltaIndex)
+        shiftAnimate(view: predictionView, to: -deltaIndex)
     }
     
     func animateToBottom() {
-        moveTo(circularAnimationPoints[circularAnimationPoints.getTop()])
-        let deltaIndex = circularAnimationPoints.getBottom() - circularAnimationPoints.getTop()
-        shiftAnimate(to: -deltaIndex + 4)
+        moveTo(view: ballNumberCircle, point: circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)])
+        moveTo(view: predictionView, point: circularAnimationPoints[circularAnimationPoints.getBottom(shiftIndex)])
+        
+        let deltaIndex = circularAnimationPoints.getBottom(shiftIndex) - circularAnimationPoints.getTop(shiftIndex)
+        
+        shiftAnimate(view: ballNumberCircle, to: -deltaIndex)
+        shiftAnimate(view: predictionView, to: -deltaIndex)
     }
     
     func animateFullCircle() {
-        shiftAnimate(to: circularAnimationSteps)
+        shiftAnimate(view: ballNumberCircle, to: circularAnimationSteps)
     }
     
     // MARK: - Create gestures.
@@ -277,8 +299,8 @@ class ViewController: UIViewController {
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         //animateFullCircle()
-        //ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop()] ? animateToBottom() : animateToTop()
-        shiftAnimate(to: circularAnimationPoints.count * 4, duration: 4.25, withSpringEffect: false)
+        ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)] ? animateToBottom() : animateToTop()
+      //  shiftAnimate(to: circularAnimationPoints.count * 4, duration: 4.25, withSpringEffect: false)
     }
 
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
@@ -290,7 +312,7 @@ class ViewController: UIViewController {
             let pointX = ballNumberCircle.center.x + translation.x
             let pointY = ballNumberCircle.center.y + translation.y
         
-            moveTo(CGPoint(x: pointX, y: pointY))
+            moveTo(view: ballNumberCircle, point: CGPoint(x: pointX, y: pointY))
             
 
         // DEBUG INFO
