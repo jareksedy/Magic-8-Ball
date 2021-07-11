@@ -40,7 +40,7 @@ class ViewController: UIViewController {
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let shiftIndex: Int = 10
+    let shiftIndex: Int = 5
     let pValue: CGFloat = 300.0
     
     // MARK: - Animation data & options.
@@ -118,10 +118,10 @@ class ViewController: UIViewController {
         ball.addSubview(predictionView)
         ballNumberCircle.addSubview(ballNumber)
         
-        //predictionView.isHidden = true
+        predictionView.isHidden = true
         
         buildCircleAnimationPoints()
-        drawAnimationPath(circularAnimationPoints)
+        //drawAnimationPath(circularAnimationPoints)
         
         moveTo(view: ballNumberCircle, point: circularAnimationPoints[circularAnimationPoints.getBottom(shiftIndex)])
         moveTo(view: predictionView, point: circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)])
@@ -162,7 +162,7 @@ class ViewController: UIViewController {
     
     func buildCircleAnimationPoints() {        
         circularAnimationPoints = getCircularAnimationPoints(centerPoint: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY),
-                                                             radius: ballSize / 2.80,
+                                                             radius: ballSize / 2.75,
                                                              steps: circularAnimationSteps)
     }
     
