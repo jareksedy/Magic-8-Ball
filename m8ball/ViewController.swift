@@ -78,14 +78,14 @@ class ViewController: UIViewController {
         
         // DEBUG INFO
         
-//        debugInfoLabel.text = ""
-//        debugInfoLabel.font = UIFont.monospacedSystemFont(ofSize: 10, weight: UIFont.Weight.regular)
-//        debugInfoLabel.sizeToFit()
-//        debugInfoLabel.textColor = UIColor.white
-//        debugInfoLabel.textAlignment = .center
-//        debugInfoLabel.center.x = bgView.bounds.midX
-//        debugInfoLabel.center.y = bgView.bounds.minY + 50
-//        bgView.addSubview(debugInfoLabel)
+        //        debugInfoLabel.text = ""
+        //        debugInfoLabel.font = UIFont.monospacedSystemFont(ofSize: 10, weight: UIFont.Weight.regular)
+        //        debugInfoLabel.sizeToFit()
+        //        debugInfoLabel.textColor = UIColor.white
+        //        debugInfoLabel.textAlignment = .center
+        //        debugInfoLabel.center.x = bgView.bounds.midX
+        //        debugInfoLabel.center.y = bgView.bounds.minY + 50
+        //        bgView.addSubview(debugInfoLabel)
         
         // END DEBUG INFO
         
@@ -97,7 +97,7 @@ class ViewController: UIViewController {
         ballNumberCircle.frame = CGRect(x: 0, y: 0, width: ballNumberCircleSize, height: ballNumberCircleSize)
         predictionView.frame = CGRect(x: 0, y: 0, width: predictionViewSize, height: predictionViewSize)
         
-        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballSize / 2 - 10)
+        ball.center = CGPoint(x: bgView.bounds.midX, y: bgView.bounds.maxY - ballSize / 2 - 20)
         ballNumberCircle.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.midY)
         predictionView.center = CGPoint(x: ball.bounds.midX, y: ball.bounds.midY)
         
@@ -159,9 +159,9 @@ class ViewController: UIViewController {
         
         // DEBUG INFO
         
-//        debugInfoLabel.text = "A(X): \(rotationAngleX.roundTo(places: 2))° A(Y): \(rotationAngleY.roundTo(places: 2))° C.X: \(ballNumberCircle.center.x.roundTo(places: 2)) C.Y: \(ballNumberCircle.center.y.roundTo(places: 2))"
-//        debugInfoLabel.center.x = bgView.bounds.midX
-//        debugInfoLabel.sizeToFit()
+        //        debugInfoLabel.text = "A(X): \(rotationAngleX.roundTo(places: 2))° A(Y): \(rotationAngleY.roundTo(places: 2))° C.X: \(ballNumberCircle.center.x.roundTo(places: 2)) C.Y: \(ballNumberCircle.center.y.roundTo(places: 2))"
+        //        debugInfoLabel.center.x = bgView.bounds.midX
+        //        debugInfoLabel.sizeToFit()
         
         // END DEBUG INFO
         
@@ -201,32 +201,17 @@ class ViewController: UIViewController {
     
     // MARK: - Animation functions.
     
-    func shiftAnimate(view: UIView, to distance: Int, duration: TimeInterval? = nil, completionHandler: ((Bool) -> ())? = nil, withSpringEffect: Bool? = false) {
-        
-        func calculateShiftIndex(index: inout Int, signum: Int, upperBound: Int) {
-            if signum > 0 {
-                index = index < upperBound - 1 ? index + signum : 0
-            } else {
-                index = index > 0 ? index + signum : upperBound - 1
-            }
-        }
-        
-        var addDistance: Int = 0
-        let springIntervals = [15, -25, 10]
-        
-        if withSpringEffect != nil && withSpringEffect == true {
-            addDistance = springIntervals.map{abs($0)}.reduce(0,+)
-        }
+    func shiftAnimate(view: UIView, to distance: Int, duration: TimeInterval? = nil, completionHandler: ((Bool) -> ())? = nil) {
         
         var relStartTime: TimeInterval = 0.0
-        let relDuration: TimeInterval = abs(1 / Double(distance + addDistance))
+        let relDuration: TimeInterval = abs(1 / Double(distance))
         
         let currentIndex = circularAnimationPoints.getCurrent(point: CGPoint(x: view.center.x, y: view.center.y)) ?? 0
         let shiftNegative = distance < 0
         
         moveTo(view: ballNumberCircle, point: circularAnimationPoints[currentIndex])
         
-        UIView.animateKeyframes(withDuration: duration ?? Double(distance + addDistance) * 0.020, delay: 0, options: [.allowUserInteraction],
+        UIView.animateKeyframes(withDuration: duration ?? Double(distance) * 0.020, delay: 0, options: [.allowUserInteraction],
                                 animations: {
                                     var index = currentIndex
                                     let toIndex = shiftNegative ? currentIndex - distance - 1 : currentIndex + distance - 1
@@ -244,33 +229,6 @@ class ViewController: UIViewController {
                                         })
                                         
                                         relStartTime += relDuration
-                                    }
-                                    
-                                    if withSpringEffect != nil && withSpringEffect == true {
-                                        
-                                        springIntervals.forEach { interval in
-                                            
-                                            index = self.circularAnimationPoints.getCurrent(point: CGPoint(x: view.center.x, y: view.center.y)) ?? 0
-                                            
-                                            for _ in 0...abs(interval) - 1 {
-                                                
-                                                if shiftNegative {
-                                                    calculateShiftIndex(index: &index,
-                                                                        signum: interval.signum(),
-                                                                        upperBound: self.circularAnimationPoints.count)
-                                                } else {
-                                                    calculateShiftIndex(index: &index,
-                                                                        signum: interval.signum(),
-                                                                        upperBound: self.circularAnimationPoints.count)
-                                                }
-                                                
-                                                UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: relDuration, animations: {
-                                                    self.moveTo(view: view, point: self.circularAnimationPoints[index])
-                                                })
-                                                
-                                                relStartTime += relDuration
-                                            }
-                                        }
                                     }
                                 },
                                 completion: completionHandler)
@@ -311,9 +269,15 @@ class ViewController: UIViewController {
     // MARK: - Handle gestures.
     
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
-        ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)] ? animateToBottom() : animateToTop()
+        
+        if ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)] {
+            animateToBottom()
+        } else {
+            animateToTop()
+        }
+        
         //moveTo(view: ballNumberCircle, point: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY))
-       //moveTo(view: ballNumberCircle, point: circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)])
+        //moveTo(view: ballNumberCircle, point: circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)])
     }
     
     @objc func handlePan(recognizer: UIPanGestureRecognizer) {
