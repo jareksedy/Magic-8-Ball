@@ -19,18 +19,16 @@ class ViewController: UIViewController {
     let ballNumberCircle = UIView()
     let ballNumber = UIImageView()
     let predictionView = UIView()
-    
-    // MARK: - Debug info.
-    
-    let debugInfoLabel = UILabel()
+    let predictionTriangle = UIImageView()
     
     // MARK: - Colors.
     
-    let viewBgColor = UIColor(red: 0.40, green: 0.13, blue: 0.80, alpha: 1.00)
+    let viewBgColor = UIColor(red: 0.17, green: 0.27, blue: 0.44, alpha: 1.00)
     let ballColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.00)
     let ballNumberColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.00)
     let ballNumberCircleColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 1.00)
     let predictionViewColor = UIColor(red: 0.07, green: 0.07, blue: 0.07, alpha: 1.00)
+    let predictionTriangleColor = UIColor(red: 0.17, green: 0.27, blue: 0.44, alpha: 1.00)
     
     // MARK: - Sizes.
     
@@ -75,19 +73,6 @@ class ViewController: UIViewController {
         ballNumberCircle.backgroundColor = ballNumberCircleColor
         predictionView.backgroundColor = predictionViewColor
         
-        // DEBUG INFO
-        
-        //        debugInfoLabel.text = ""
-        //        debugInfoLabel.font = UIFont.monospacedSystemFont(ofSize: 10, weight: UIFont.Weight.regular)
-        //        debugInfoLabel.sizeToFit()
-        //        debugInfoLabel.textColor = UIColor.white
-        //        debugInfoLabel.textAlignment = .center
-        //        debugInfoLabel.center.x = bgView.bounds.midX
-        //        debugInfoLabel.center.y = bgView.bounds.minY + 50
-        //        bgView.addSubview(debugInfoLabel)
-        
-        // END DEBUG INFO
-        
         ballSize = bgView.bounds.width - 20
         ballNumberCircleSize = (bgView.bounds.width - 20) * 0.55
         predictionViewSize = (bgView.bounds.width - 20) * 0.55
@@ -116,6 +101,15 @@ class ViewController: UIViewController {
         
         ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
         
+        predictionTriangle.image = UIImage(named: "triangle")!
+            .scalePreservingAspectRatio(targetSize: CGSize(width: predictionViewSize  - ballSize / 5, height: predictionViewSize))
+            .withRenderingMode(.alwaysTemplate)
+        
+        predictionTriangle.tintColor = predictionTriangleColor
+        predictionTriangle.sizeToFit()
+        
+        predictionTriangle.center = CGPoint(x: predictionView.bounds.midX + 5, y: predictionView.bounds.midY - 20)
+        
         ballNumberCircle.layer.transform = getTransform(CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY))
         predictionView.layer.transform = getTransform(CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY))
         
@@ -123,6 +117,7 @@ class ViewController: UIViewController {
         ball.addSubview(ballNumberCircle)
         ball.addSubview(predictionView)
         ballNumberCircle.addSubview(ballNumber)
+        predictionView.addSubview(predictionTriangle)
         
         buildCircleAnimationPoints()
         //drawAnimationPath(circularAnimationPoints)
@@ -154,16 +149,8 @@ class ViewController: UIViewController {
         
         transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
         transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
-        transform = CATransform3DRotate(transform, 6 * .pi / 180, 0, 0, 1)
+        //transform = CATransform3DRotate(transform, 6 * .pi / 180, 0, 0, 1)
         //transform = CATransform3DRotate(transform, -(rotationAngleY - 24) * .pi / 140, 0, 0, 1)
-        
-        // DEBUG INFO
-        
-        //        debugInfoLabel.text = "A(X): \(rotationAngleX.roundTo(places: 2))° A(Y): \(rotationAngleY.roundTo(places: 2))° C.X: \(ballNumberCircle.center.x.roundTo(places: 2)) C.Y: \(ballNumberCircle.center.y.roundTo(places: 2))"
-        //        debugInfoLabel.center.x = bgView.bounds.midX
-        //        debugInfoLabel.sizeToFit()
-        
-        // END DEBUG INFO
         
         return transform
     }
