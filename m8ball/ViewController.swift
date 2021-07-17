@@ -41,7 +41,7 @@ class ViewController: UIViewController {
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let shiftIndex: Int = 3
+    let shiftIndex: Int = 6
     
     // MARK: - Animation data & options.
     
@@ -64,7 +64,6 @@ class ViewController: UIViewController {
         
         super.viewDidLayoutSubviews()
         initialViewSetup()
-        createPanGestureRecognizer(targetView: bgView)
         createTapGestureRecognizer(targetView: ball)
         animateToTop()
     }
@@ -149,13 +148,14 @@ class ViewController: UIViewController {
         rotationAngleX = (point.y - ballNumberCircleSize + pF) / divider * -1
         rotationAngleY = (point.x - ballNumberCircleSize + pF) / divider
         
-        transform.m34 = -1 / (pF + ballNumberCircleSize)
+        transform.m34 = -1 / (pF + ballNumberCircleSize) * 1.25
         
         transform = CATransform3DScale(transform, sF, sF, sF)
         
         transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
         transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
-        //transform = CATransform3DRotate(transform, -rotationAngleY * .pi / 45, 0, 0, 1)
+        transform = CATransform3DRotate(transform, 6 * .pi / 180, 0, 0, 1)
+        //transform = CATransform3DRotate(transform, -(rotationAngleY - 24) * .pi / 140, 0, 0, 1)
         
         // DEBUG INFO
         
@@ -256,11 +256,6 @@ class ViewController: UIViewController {
     
     // MARK: - Create gestures.
     
-    func createPanGestureRecognizer(targetView: UIView) {
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(recognizer:)))
-        targetView.addGestureRecognizer(panGesture)
-    }
-    
     func createTapGestureRecognizer(targetView: UIView) {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:)))
         targetView.addGestureRecognizer(tapGesture)
@@ -276,30 +271,18 @@ class ViewController: UIViewController {
             animateToTop()
         }
         
+        UIView.animate(withDuration: 1.25,
+                       delay: 0,
+                       usingSpringWithDamping: 0.77,
+                       initialSpringVelocity: 0.10,
+                       options: [.allowUserInteraction],
+                       animations: {
+                        self.ball.transform = CGAffineTransform(scaleX: 3, y: 3)
+                        self.ball.transform = .identity
+                       },
+                       completion: nil)
+        
         //moveTo(view: ballNumberCircle, point: CGPoint(x: ball.bounds.midX, y: ball.bounds.midY))
         //moveTo(view: ballNumberCircle, point: circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)])
-    }
-    
-    @objc func handlePan(recognizer: UIPanGestureRecognizer) {
-        
-        let translation = recognizer.translation(in: view)
-        
-        recognizer.setTranslation(.zero, in: view)
-        
-        let pointX = ballNumberCircle.center.x + translation.x
-        let pointY = ballNumberCircle.center.y + translation.y
-        
-        moveTo(view: ballNumberCircle, point: CGPoint(x: pointX, y: pointY))
-        
-        switch recognizer.state {
-        
-        case .ended:
-            return
-        //animateToOrigin()
-        
-        default:
-            return
-            
-        }
     }
 }
