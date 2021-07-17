@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     
     // MARK: - Views.
     
-    let ball = UIView()
+    let ball = UIButton()
     let ballNumberCircle = UIView()
     let ballNumber = UIImageView()
     let predictionView = UIView()
@@ -62,8 +62,42 @@ class ViewController: UIViewController {
         
         super.viewDidLayoutSubviews()
         initialViewSetup()
-        createTapGestureRecognizer(targetView: ball)
+        ball.addTarget(self, action: #selector(animateDown), for: [.touchDown, .touchDragEnter])
+        ball.addTarget(self, action: #selector(animateUp), for: [.touchDragExit, .touchCancel, .touchUpInside, .touchUpOutside])
+        //createTapGestureRecognizer(targetView: ball)
         animateToTop()
+    }
+    
+    @objc func animateDown() {
+        UIView.animate(withDuration: 0.5,
+                       delay: 0,
+                       usingSpringWithDamping: 0.77,
+                       initialSpringVelocity: 0.10,
+                       options: [.allowUserInteraction],
+                       animations: {
+                        self.ball.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
+                       },
+                       completion: nil)
+    }
+    
+    @objc func animateUp() {
+        
+        if ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)] {
+            animateToBottom()
+        } else {
+            animateToTop()
+        }
+        
+        UIView.animate(withDuration: 1.25,
+                       delay: 0,
+                       usingSpringWithDamping: 0.77,
+                       initialSpringVelocity: 0.10,
+                       options: [.allowUserInteraction],
+                       animations: {
+                        self.ball.transform = CGAffineTransform(scaleX: 3, y: 3)
+                        self.ball.transform = .identity
+                       },
+                       completion: nil)
     }
     
     func initialViewSetup() {
@@ -117,7 +151,7 @@ class ViewController: UIViewController {
         ball.addSubview(ballNumberCircle)
         ball.addSubview(predictionView)
         ballNumberCircle.addSubview(ballNumber)
-        predictionView.addSubview(predictionTriangle)
+        //predictionView.addSubview(predictionTriangle)
         
         buildCircleAnimationPoints()
         //drawAnimationPath(circularAnimationPoints)
