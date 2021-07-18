@@ -16,19 +16,19 @@ class ViewController: UIViewController {
     // MARK: - Views.
     
     let ball = UIButton()
-    let ballNumberCircle = UIView()
+    let ballNumberCircle = UIButton()
     let ballNumber = UIImageView()
-    let predictionView = UIView()
+    let predictionView = UIButton()
     let predictionTriangle = UIImageView()
     
     // MARK: - Colors.
     
-    let viewBgColor = UIColor(red: 0.17, green: 0.27, blue: 0.44, alpha: 1.00)
-    let ballColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.00)
-    let ballNumberColor = UIColor(red: 0.13, green: 0.13, blue: 0.13, alpha: 1.00)
+    let viewBgColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 1.00)
+    let ballColor = UIColor(red: 0.00, green: 0.18, blue: 0.65, alpha: 1.00)
+    let ballNumberColor = UIColor(red: 0.00, green: 0.18, blue: 0.65, alpha: 1.00)
     let ballNumberCircleColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 1.00)
-    let predictionViewColor = UIColor(red: 0.07, green: 0.07, blue: 0.07, alpha: 1.00)
-    let predictionTriangleColor = UIColor(red: 0.17, green: 0.27, blue: 0.44, alpha: 1.00)
+    let predictionViewColor = UIColor(red: 0.00, green: 0.18, blue: 0.65, alpha: 1.00)
+    let predictionTriangleColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 1.00)
     
     // MARK: - Sizes.
     
@@ -39,7 +39,7 @@ class ViewController: UIViewController {
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let shiftIndex: Int = 6
+    let shiftIndex: Int = 4
     
     // MARK: - Animation data & options.
     
@@ -64,11 +64,14 @@ class ViewController: UIViewController {
         initialViewSetup()
         ball.addTarget(self, action: #selector(animateDown), for: [.touchDown, .touchDragEnter])
         ball.addTarget(self, action: #selector(animateUp), for: [.touchDragExit, .touchCancel, .touchUpInside, .touchUpOutside])
+        ballNumberCircle.addTarget(self, action: #selector(animateDown), for: [.touchDown, .touchDragEnter])
+        ballNumberCircle.addTarget(self, action: #selector(animateUp), for: [.touchDragExit, .touchCancel, .touchUpInside, .touchUpOutside])
         //createTapGestureRecognizer(targetView: ball)
         animateToTop()
     }
     
     @objc func animateDown() {
+        
         UIView.animate(withDuration: 0.5,
                        delay: 0,
                        usingSpringWithDamping: 0.77,
@@ -88,7 +91,7 @@ class ViewController: UIViewController {
             animateToTop()
         }
         
-        UIView.animate(withDuration: 1.25,
+        UIView.animate(withDuration: 1.0,
                        delay: 0,
                        usingSpringWithDamping: 0.77,
                        initialSpringVelocity: 0.10,
@@ -136,13 +139,14 @@ class ViewController: UIViewController {
         ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
         
         predictionTriangle.image = UIImage(named: "triangle")!
-            .scalePreservingAspectRatio(targetSize: CGSize(width: predictionViewSize  - ballSize / 5, height: predictionViewSize))
+            .scalePreservingAspectRatio(targetSize: CGSize(width: predictionViewSize / 1.10, height: predictionViewSize / 1.10))
             .withRenderingMode(.alwaysTemplate)
         
         predictionTriangle.tintColor = predictionTriangleColor
         predictionTriangle.sizeToFit()
         
-        predictionTriangle.center = CGPoint(x: predictionView.bounds.midX + 5, y: predictionView.bounds.midY - 20)
+        predictionTriangle.center = CGPoint(x: predictionView.bounds.midX, y: predictionView.bounds.midY)
+        predictionTriangle.transform = CGAffineTransform(rotationAngle: 135)
         
         ballNumberCircle.layer.transform = getTransform(CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY))
         predictionView.layer.transform = getTransform(CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY))
@@ -151,7 +155,7 @@ class ViewController: UIViewController {
         ball.addSubview(ballNumberCircle)
         ball.addSubview(predictionView)
         ballNumberCircle.addSubview(ballNumber)
-        //predictionView.addSubview(predictionTriangle)
+        predictionView.addSubview(predictionTriangle)
         
         buildCircleAnimationPoints()
         //drawAnimationPath(circularAnimationPoints)
@@ -177,14 +181,13 @@ class ViewController: UIViewController {
         rotationAngleX = (point.y - ballNumberCircleSize + pF) / divider * -1
         rotationAngleY = (point.x - ballNumberCircleSize + pF) / divider
         
-        transform.m34 = -1 / (pF + ballNumberCircleSize) * 1.25
+        transform.m34 = -1 / (pF + ballNumberCircleSize) * 1.15
         
         transform = CATransform3DScale(transform, sF, sF, sF)
         
         transform = CATransform3DRotate(transform, rotationAngleX * .pi / 180, 1, 0, 0)
         transform = CATransform3DRotate(transform, rotationAngleY * .pi / 180, 0, 1, 0)
-        //transform = CATransform3DRotate(transform, 6 * .pi / 180, 0, 0, 1)
-        //transform = CATransform3DRotate(transform, -(rotationAngleY - 24) * .pi / 140, 0, 0, 1)
+        transform = CATransform3DRotate(transform, -(rotationAngleY - 22) * .pi / 140, 0, 0, 1)
         
         return transform
     }
