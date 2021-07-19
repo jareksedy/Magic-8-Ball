@@ -39,7 +39,7 @@ class ViewController: UIViewController {
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let shiftIndex: Int = 4
+    let shiftIndex: Int = 5
     
     // MARK: - Animation data & options.
     
@@ -137,6 +137,7 @@ class ViewController: UIViewController {
         ballNumber.sizeToFit()
         
         ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
+        ballNumber.transform = CGAffineTransform(rotationAngle: 145 * .pi / 180)
         
         predictionTriangle.image = UIImage(named: "triangle")!
             .scalePreservingAspectRatio(targetSize: CGSize(width: predictionViewSize / 1.10, height: predictionViewSize / 1.10))
@@ -146,7 +147,7 @@ class ViewController: UIViewController {
         predictionTriangle.sizeToFit()
         
         predictionTriangle.center = CGPoint(x: predictionView.bounds.midX, y: predictionView.bounds.midY)
-        predictionTriangle.transform = CGAffineTransform(rotationAngle: 135)
+        predictionTriangle.transform = CGAffineTransform(rotationAngle: 180 * .pi / 180)
         
         ballNumberCircle.layer.transform = getTransform(CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY))
         predictionView.layer.transform = getTransform(CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY))
