@@ -21,6 +21,15 @@ class ViewController: UIViewController {
     let predictionView = UIButton()
     let predictionTriangle = UIImageView()
     
+    // MARK: - Predictions.
+    
+    struct Prediction {
+        let id: Int
+        let imageName: String
+    }
+    
+    let predictions: [Prediction] = [Prediction(id: 0, imageName: "p_01"), Prediction(id: 1, imageName: "p_02")]
+    
     // MARK: - Colors.
     
     let viewBgColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 1.00)
@@ -86,6 +95,11 @@ class ViewController: UIViewController {
     @objc func animateUp() {
         
         if ballNumberCircle.center == circularAnimationPoints[circularAnimationPoints.getTop(shiftIndex)] {
+            
+            predictionTriangle.image = UIImage(named: predictions[Int.random(in: 0...predictions.count - 1)].imageName)!
+                .scalePreservingAspectRatio(targetSize: CGSize(width: predictionViewSize / 1.10, height: predictionViewSize / 1.10))
+                .withRenderingMode(.alwaysTemplate)
+            
             animateToBottom()
         } else {
             animateToTop()
@@ -139,7 +153,7 @@ class ViewController: UIViewController {
         ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
         ballNumber.transform = CGAffineTransform(rotationAngle: 145 * .pi / 180)
         
-        predictionTriangle.image = UIImage(named: "triangle")!
+        predictionTriangle.image = UIImage(named: "p_01")!
             .scalePreservingAspectRatio(targetSize: CGSize(width: predictionViewSize / 1.10, height: predictionViewSize / 1.10))
             .withRenderingMode(.alwaysTemplate)
         
