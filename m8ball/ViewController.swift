@@ -35,7 +35,7 @@ class ViewController: UIViewController {
     
     // MARK: - Colors.
     
-    let viewBgColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 1.00)
+    let viewBgColor = UIColor(red: 0.00, green: 0.18, blue: 0.65, alpha: 1.00)
     let ballColor = UIColor(red: 0.00, green: 0.18, blue: 0.65, alpha: 1.00)
     let ballNumberColor = UIColor(red: 0.00, green: 0.18, blue: 0.65, alpha: 1.00)
     let ballNumberCircleColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 1.00)
@@ -141,6 +141,8 @@ class ViewController: UIViewController {
         
         ball.layer.cornerRadius = ballSize / 2
         //ball.layer.maskedCorners = [.layerMinXMinYCorner,.layerMaxXMinYCorner]
+        ball.layer.borderWidth = 1.0
+        ball.layer.borderColor = UIColor.white.cgColor
         ballNumberCircle.layer.cornerRadius = ballNumberCircleSize / 2
         predictionView.layer.cornerRadius = predictionViewSize / 2
         
