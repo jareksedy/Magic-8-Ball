@@ -28,9 +28,9 @@ class ViewController: UIViewController {
         let imageName: String
     }
     
-    let predictions: [Prediction] = [Prediction(id: 0, imageName: "p_01"),
-                                     Prediction(id: 1, imageName: "p_02"),
-                                     Prediction(id: 2, imageName: "p_03"),
+    let predictions: [Prediction] = [Prediction(id: 0, imageName: "p_17"),
+                                     Prediction(id: 0, imageName: "p_09"),
+                                     Prediction(id: 0, imageName: "p_02"),
     ]
     
     // MARK: - Colors.
