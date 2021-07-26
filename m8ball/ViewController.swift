@@ -31,6 +31,7 @@ class ViewController: UIViewController {
     let predictions: [Prediction] = [Prediction(id: 0, imageName: "p_17"),
                                      Prediction(id: 0, imageName: "p_09"),
                                      Prediction(id: 0, imageName: "p_02"),
+                                     Prediction(id: 0, imageName: "p_07"),
     ]
     
     // MARK: - Colors.
