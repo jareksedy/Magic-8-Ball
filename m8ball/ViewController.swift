@@ -28,12 +28,13 @@ class ViewController: UIViewController {
         let imageName: String
     }
     
-    let predictions: [Prediction] = [Prediction(id: 0, imageName: "p_17"),
-                                     Prediction(id: 0, imageName: "p_09"),
-                                     Prediction(id: 0, imageName: "p_02"),
+    let predictions: [Prediction] = [Prediction(id: 0, imageName: "p_09"),
                                      Prediction(id: 0, imageName: "p_07"),
-                                     Prediction(id: 0, imageName: "p_06"),
-                                     Prediction(id: 0, imageName: "p_12"),
+                                     Prediction(id: 0, imageName: "p_08"),
+                                     Prediction(id: 0, imageName: "p_14"),
+                                     Prediction(id: 0, imageName: "p_03"),
+                                     Prediction(id: 0, imageName: "p_16"),
+                                     Prediction(id: 0, imageName: "p_17"),
     ]
     
     // MARK: - Colors.
@@ -54,7 +55,7 @@ class ViewController: UIViewController {
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let shiftIndex: Int = 5
+    let shiftIndex: Int = 4
     
     // MARK: - Animation data & options.
     
@@ -87,9 +88,9 @@ class ViewController: UIViewController {
     
     @objc func animateDown() {
         
-        UIView.animate(withDuration: 0.5,
+        UIView.animate(withDuration: 0.70,
                        delay: 0,
-                       usingSpringWithDamping: 0.77,
+                       usingSpringWithDamping: 0.70,
                        initialSpringVelocity: 0.10,
                        options: [.allowUserInteraction],
                        animations: {
@@ -111,10 +112,10 @@ class ViewController: UIViewController {
             animateToTop()
         }
         
-        UIView.animate(withDuration: 1.0,
+        UIView.animate(withDuration: 1.5,
                        delay: 0,
-                       usingSpringWithDamping: 0.77,
-                       initialSpringVelocity: 0.10,
+                       usingSpringWithDamping: 0.60,
+                       initialSpringVelocity: 0.20,
                        options: [.allowUserInteraction],
                        animations: {
                         self.ball.transform = CGAffineTransform(scaleX: 3, y: 3)
@@ -161,8 +162,8 @@ class ViewController: UIViewController {
         ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
         ballNumber.transform = CGAffineTransform(rotationAngle: 145 * .pi / 180)
         
-        predictionTriangle.image = UIImage(named: "p_01")!
-            .scalePreservingAspectRatio(targetSize: CGSize(width: predictionViewSize / 1.10, height: predictionViewSize / 1.10))
+        predictionTriangle.image = UIImage(named: "p_09")!
+            .scalePreservingAspectRatio(targetSize: CGSize(width: predictionViewSize / 1.0, height: predictionViewSize / 1.0))
             .withRenderingMode(.alwaysTemplate)
         
         predictionTriangle.tintColor = predictionTriangleColor
