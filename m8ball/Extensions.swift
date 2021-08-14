@@ -10,8 +10,8 @@ import UIKit
 func getCircularAnimationPoints(centerPoint: CGPoint, radius: CGFloat, steps: Int)->[CGPoint] {
     let result: [CGPoint] = stride(from: 0.0, to: 360.0, by: Double(360 / steps)).map {
         let radians = CGFloat($0) * .pi / 180
-        let x = centerPoint.x + radius * cos(radians) * 0.60 // default: 0.65
-        let y = centerPoint.y + radius * sin(radians) + (radius / 3.25)
+        let x = centerPoint.x + radius * cos(radians) * 0.65 // default: 0.65
+        let y = centerPoint.y + radius * sin(radians) + (radius / 3.0) // default: 3.25
         return CGPoint(x: x, y: y)
     }
     return result

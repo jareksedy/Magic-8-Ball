@@ -66,7 +66,7 @@ class ViewController: UIViewController {
     let springDamping: CGFloat = 0.30
     let springVelocity: CGFloat = 0.10
     
-    let circularAnimationSteps: Int = 64
+    let circularAnimationSteps: Int = 56 // default: 64
     var circularAnimationPoints = [CGPoint]()
     var circularAnimationIndex = 0
     
