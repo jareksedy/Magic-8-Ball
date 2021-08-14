@@ -35,6 +35,8 @@ class ViewController: UIViewController {
                                      Prediction(id: 0, imageName: "p_03"),
                                      Prediction(id: 0, imageName: "p_16"),
                                      Prediction(id: 0, imageName: "p_17"),
+                                     Prediction(id: 0, imageName: "p_06"),
+                                     Prediction(id: 0, imageName: "p_19"),
     ]
     
     // MARK: - Colors.
@@ -55,7 +57,7 @@ class ViewController: UIViewController {
     // MARK: - Angles, boudaries & perspective control.
     
     let ballTopBottomBoundary: CGFloat = 90.0
-    let shiftIndex: Int = 4
+    let shiftIndex: Int = 3
     
     // MARK: - Animation data & options.
     
@@ -114,8 +116,8 @@ class ViewController: UIViewController {
         
         UIView.animate(withDuration: 1.5,
                        delay: 0,
-                       usingSpringWithDamping: 0.60,
-                       initialSpringVelocity: 0.20,
+                       usingSpringWithDamping: 0.75,
+                       initialSpringVelocity: 0.15,
                        options: [.allowUserInteraction],
                        animations: {
                         self.ball.transform = CGAffineTransform(scaleX: 3, y: 3)
