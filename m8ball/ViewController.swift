@@ -37,7 +37,7 @@ class ViewController: UIViewController {
                                      Prediction(id: 0, imageName: "p_17"),
                                      Prediction(id: 0, imageName: "p_06"),
                                      Prediction(id: 0, imageName: "p_19"),
-                                     Prediction(id: 0, imageName: "p_10"),
+                                     //Prediction(id: 0, imageName: "p_10"),
     ]
     
     // MARK: - Colors.
@@ -163,7 +163,7 @@ class ViewController: UIViewController {
         ballNumber.sizeToFit()
         
         ballNumber.center = CGPoint(x: ballNumberCircle.bounds.midX, y: ballNumberCircle.bounds.midY)
-        ballNumber.transform = CGAffineTransform(rotationAngle: 145 * .pi / 180)
+        ballNumber.transform = CGAffineTransform(rotationAngle: 155 * .pi / 180)
         
         predictionTriangle.image = UIImage(named: "p_09")!
             .scalePreservingAspectRatio(targetSize: CGSize(width: predictionViewSize / 1.0, height: predictionViewSize / 1.0))
@@ -208,7 +208,7 @@ class ViewController: UIViewController {
         rotationAngleX = (point.y - ballNumberCircleSize + pF) / divider * -1
         rotationAngleY = (point.x - ballNumberCircleSize + pF) / divider
         
-        transform.m34 = -1 / (pF + ballNumberCircleSize) * 1.15
+        transform.m34 = -1 / (pF + ballNumberCircleSize) * 1.35 // 1.15
         
         transform = CATransform3DScale(transform, sF, sF, sF)
         
