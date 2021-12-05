@@ -37,7 +37,6 @@ class ViewController: UIViewController {
                                      Prediction(id: 0, imageName: "p_17"),
                                      Prediction(id: 0, imageName: "p_06"),
                                      Prediction(id: 0, imageName: "p_19"),
-                                     //Prediction(id: 0, imageName: "p_10"),
     ]
     
     // MARK: - Colors.
